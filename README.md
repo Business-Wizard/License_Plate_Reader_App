@@ -1,7 +1,7 @@
 License_Plate_Recognition
 ==============================
 
-ize car license plates
+Detect and Recognize car license plates
 
 Project Organization
 ------------
