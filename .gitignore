@@ -1,6 +1,9 @@
 # Custom
 */.DS_Store
-data/
+data/external/
+data/interim/
+data/processed/
+data/raw/
 
 
 # Byte-compiled / optimized / DLL files
