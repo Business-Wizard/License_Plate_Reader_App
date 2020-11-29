@@ -1,5 +1,5 @@
-import os
 from src.features import build_features
+import os
 import numpy as np
 import cv2
 
@@ -56,6 +56,10 @@ if __name__ == '__main__':
             segment_name = directory_to_save_images + label[idx] + ".png"
             cv2.imwrite(segment_name, segment)
     
+
+
+
+
 
 
 

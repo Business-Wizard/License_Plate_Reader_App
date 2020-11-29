@@ -100,14 +100,14 @@ if __name__ == '__main__':
     character = snip_single_character(img, characters[1])
     print(characters)
 
-    # fig, ax = plt.subplots(nrows=3, ncols=2, figsize=(11,6), dpi=200)
-    # ax[0][0].imshow(img)
-    # ax[0][1].imshow(grayed, cmap='gray')
-    # ax[1][0].imshow(threshed, cmap='gray')
-    # ax[1][1].imshow(blurred, cmap='gray')
-    # ax[2][0].imshow(dilated, cmap='gray')
-    # ax[2][1].imshow(edges,cmap='gray')
-    # plt.show()
+    fig, ax = plt.subplots(nrows=3, ncols=2, figsize=(11,6), dpi=200)
+    ax[0][0].imshow(img)
+    ax[0][1].imshow(grayed, cmap='gray')
+    ax[1][0].imshow(threshed, cmap='gray')
+    ax[1][1].imshow(blurred, cmap='gray')
+    ax[2][0].imshow(dilated, cmap='gray')
+    ax[2][1].imshow(character,cmap='gray')
+    plt.show()
 
     chars_lst = pipeline_single(sample3, dilatekernel=(3,3),blurkernel=(5,5), div=25, gauss=True)
     fig2, ax2 = plt.subplots(nrows=3, ncols=3, figsize=(11,6), dpi=200)
@@ -116,3 +116,10 @@ if __name__ == '__main__':
             break
         ax.imshow(chars_lst[idx], cmap='gray')
     plt.show()
+
+
+    # (1000, 7, 30, 30) = data.shape
+    #* batches of 7 in the CNN
+    # (images, chracters, rows, cols)
+
+    # train on a (1000, 
