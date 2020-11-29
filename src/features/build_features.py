@@ -73,7 +73,7 @@ def snip_all_characters(image, bounding_boxes):
 def standardize_snips(snips: list):
     snip_lst = snips.copy()
     for idx, img in enumerate(snip_lst):
-        snip_lst[idx] = cv2.resize(img, (30,30))
+        snip_lst[idx] = cv2.resize(img, (30,30)).astype('float32') / 255
     return snip_lst
 
 def pipeline_single(filename: str, dilatekernel: tuple=(3,3), blurkernel: tuple=(5,5), div: int=25, gauss: bool=True):
@@ -96,7 +96,7 @@ if __name__ == '__main__':
     threshed = threshold_image(grayed)
     blurred = blur_image(threshed, ksize=(7,7), div=25, gauss=True)
     dilated = dilate_image(blurred, ksize=(3,3), iters=1)
-    edges, characters = detect_contours(dilated.copy())
+    characters = detect_contours(dilated.copy())[1]
     character = snip_single_character(img, characters[1])
     print(characters)
 

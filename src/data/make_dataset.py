@@ -1,18 +1,20 @@
 import os
-from src.features.build_features import read_image
-from tensorflow.keras.utils import to_categorical
+from src.features import build_features
 import numpy as np
-from src.features import *
+import cv2
 
-def list_directory(directory: str):
+def get_image_labels(directory: str):
     return [dir.lower().replace('-', '').split('.')[0] for dir in os.listdir(directory)]
 
 #TODO create data structure to hold snip image data
 #TODO decide on shape of data structure
-def create_data_array():
+def read_images():
     np.array()
     pass
 
+#TODO save file with name of image
+
+'''
 def load_and_featurize_data(image_shape: tuple=(30,30)):
     # the data, shuffled and split between train and test sets
     # X_train, y_train, X_test, y_test = 
@@ -31,15 +33,29 @@ def load_and_featurize_data(image_shape: tuple=(30,30)):
     Y_test = to_categorical(y_test, nb_classes)
     # in Ipython you should compare Y_test to y_test
     return X_train, X_test, Y_train, Y_test
+'''
 
 if __name__ == '__main__':
+    '''get data directory'''
     current_working_directory = os.getcwd()
     #! update to correct data folder holding your license plate images
-    data_directory = current_working_directory + "/data/external/2_recognition/license_synthetic/license-plates"
-    data_lst = list_directory(data_directory)
-    print(data_lst[0])
-    
+    image = current_working_directory + "/data/external/2_recognition/license_synthetic/license-plates"
 
+    '''get image labels'''
+    orig_images = os.listdir(image)
+    image_labels = get_image_labels(image)
+    # print(image_labels[0])
+    directory_to_save_images = "../../data/interim/"
+    print(len(image_labels))
+        
+    '''save processed images with label as filename'''
+    for image, label in zip(orig_images, image_labels):
+        new_image_name = directory_to_save_images + label + ".png"
+        character_segments = build_features.pipeline_single(image, dilatekernel=(3,3),blurkernel=(5,5), div=25, gauss=True)
+        for idx, segment in enumerate(character_segments):
+            segment_name = directory_to_save_images + label[idx] + ".png"
+            cv2.imwrite(segment_name, segment)
+    
 
 
 

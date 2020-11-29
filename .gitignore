@@ -3,7 +3,6 @@
 data/external/
 data/interim/
 data/processed/
-data/raw/
 
 
 # Byte-compiled / optimized / DLL files
