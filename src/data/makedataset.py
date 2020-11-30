@@ -3,15 +3,16 @@ import os
 import cv2
 import numpy as np
 
-default_image_directory = "data/external/2_recognition/license_synthetic/license-plates/"
-default_interim_directory = os.path.join(os.getcwd(), "data", "interim", "2_recognition/")
-default_processed_directory = os.path.join(os.getcwd(), "data", "processed", "2_recognition/")
+data_directory = os.path.join(os.getcwd(), "data/external/2_recognition/license_synthetic/license-plates/data/")
+default_image_directory = os.path.join(os.getcwd(), "external/2_recognition/")
+default_interim_directory = os.path.join(os.getcwd(), "interim/2_recognition/")
+default_processed_directory = os.path.join(os.getcwd(), "processed/2_recognition/")
 
 def get_image_labels(directory: str):
     return [dir.lower().replace('-', '').split('.')[0] for dir in os.listdir(directory)]
 
-def process_directory(directory_output: str
-    ,directory_input: str=(os.getcwd() + '/' + default_image_directory)
+def process_directory(directory_output: str=default_interim_directory
+    ,directory_input: str=default_image_directory
     ,size: int=10):
     
     image_labels = get_image_labels(directory_input)
@@ -20,9 +21,34 @@ def process_directory(directory_output: str
         size = 1000000
     for image, label, __ in zip(orig_images, image_labels, range(size)):
         old_image_name = directory_input + image
-        new_image_name = directory_to_save_images + label + ".png"
+        new_image_name = directory_output + label + ".png"
         processed_image = pipeline_single(old_image_name, dilatekernel=(3,3),blurkernel=(5,5), div=25, gauss=True)
         cv2.imwrite(new_image_name, processed_image)
+
+def split_train_test(directory_input: str=default_interim_directory
+    , directory_output: str=default_processed_directory
+    , test_size: float=0.3):
+    
+    filenames = os.listdir(directory_input)
+    images_array = np.array()
+
+    for filename in filenames:
+        filepath = os.path.join(default_interim_directory, filename)
+        image = cv2.imread(filepath)
+        images_array = images_array.vstack(image)
+        # fill array np.vstack
+    np.random.shuffle(images_array)
+    # shuffle array np.random.shuffle
+
+    # train/test array split
+
+    # mkdir train/, test/  os.mkdir
+
+    # copy files os.
+
+    images = os.listdir(directory_input)
+
+    
 
 #TODO create data structure to hold snip image data
 #TODO decide on shape of data structure
@@ -69,7 +95,7 @@ if __name__ == '__main__':
     directory_to_save_images = os.path.join(os.getcwd(), "data", "interim", "2_recognition/")
     
     '''save processed images with label as filename'''
-    process_directory(directory_output=directory_to_save_images, size=10)
+    # process_directory(directory_output=directory_to_save_images, size=10)
     
     # new_image_name = directory_to_save_images + image_labels[0] + ".png"
     # print(f'input image name: {orig_images[0]}')
