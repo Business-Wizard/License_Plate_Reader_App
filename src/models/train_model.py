@@ -52,6 +52,13 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size):
                   metrics=['accuracy'])
     return model
 
+#TODO character-level accuracy for evaluation
+
+#TODO train/test split for tuning
+
+#TODO from keras.utils.np_utis import to_categorical
+#* for setting the 36 classes to categorical
+#* y_cat_train = to_vategorical(y_test, 36)
 
 if __name__ == '__main__':
     #! important inputs to the model: don't changes the ones marked KEEP

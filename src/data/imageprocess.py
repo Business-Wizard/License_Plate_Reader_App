@@ -8,11 +8,17 @@ sample2 = "data/external/2_recognition/license_synthetic/license-plates/80-ZYY-2
 sample3 = "data/external/2_recognition/license_synthetic/license-plates/16-UML-08.png"
 
 def read_image(filename: str):
-    img =  cv2.cvtColor(cv2.imread(filename), cv2.COLOR_RGB2BGR)
+    try:
+        img =  cv2.cvtColor(cv2.imread(filename), cv2.COLOR_RGB2BGR)
+    except:
+        img =  cv2.imread(filename)
     return img
 
 def grayscale(image: np.ndarray):
-    return cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    try:
+        return cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    except:
+        return image
 
 def threshold_image(image):
     threshold_image = cv2.threshold(image, 0, 255, cv2.THRESH_OTSU, cv2.THRESH_BINARY_INV)[1]
@@ -51,9 +57,9 @@ def pipeline_single(filename: str, dilatekernel: tuple=(3,3), blurkernel: tuple=
     dilated = dilate_image(blurred, dilatekernel)
     return dilated
     
-
 # Iterate for folder of images
 def pipeline_bulk(folder: str, dilatekernel: tuple=(3,3), blurkernel: tuple=(5,5), div: int=25, gauss: bool=True):
+    #! implemented in makedataset script
     pass
 
 if __name__ == '__main__':
@@ -63,21 +69,14 @@ if __name__ == '__main__':
     blurred = blur_image(threshed, ksize=(7,7), div=25, gauss=True)
     dilated = dilate_image(blurred, ksize=(3,3), iters=1)
 
-    fig, ax = plt.subplots(nrows=3, ncols=2, figsize=(11,6), dpi=200)
-    ax[0][0].imshow(img)
-    ax[0][1].imshow(grayed, cmap='gray')
-    ax[1][0].imshow(threshed, cmap='gray')
-    ax[1][1].imshow(blurred, cmap='gray')
-    ax[2][0].imshow(dilated, cmap='gray')
-    plt.show()
+    # fig, ax = plt.subplots(nrows=3, ncols=2, figsize=(11,6), dpi=200)
+    # ax[0][0].imshow(img)
+    # ax[0][1].imshow(grayed, cmap='gray')
+    # ax[1][0].imshow(threshed, cmap='gray')
+    # ax[1][1].imshow(blurred, cmap='gray')
+    # ax[2][0].imshow(dilated, cmap='gray')
+    # plt.show()
 
-    chars_lst = pipeline_single(sample3, dilatekernel=(3,3),blurkernel=(5,5), div=25, gauss=True)
-    fig2, ax2 = plt.subplots(nrows=3, ncols=3, figsize=(11,6), dpi=200)
-    for idx, ax in enumerate(ax2.flatten()):
-        if idx > len(chars_lst)-1:
-            break
-        ax.imshow(chars_lst[idx], cmap='gray')
-    plt.show()
 
 
     # (1000, 7, 30, 30) = data.shape
