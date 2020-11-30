@@ -1,8 +1,67 @@
-from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPooling2D
+from keras.utils.np_utils import to_categorical
+from sklearn.model_selection import train_test_split
 import tensorflow as tf
+import segmentation
+import os
+import numpy as np
+
+data_directory = os.path.join(os.getcwd(), "data")
+default_processed_directory = os.path.join(data_directory, "processed/2_recognition")
+default_train_directory = os.path.join(default_processed_directory, "train_set")
+
+
+def thoughts():
+    #* shape of DataFrames
+    #* (index, label, pixels)
+    # X: 1000, 900
+    # y: 1000, 1
+    # predictions: 6000, 1
+
+    # copy files os.
+    pass
+
+def load_and_featurize_data(directory: str=default_train_directory
+    , image_shape: tuple=(30,30)):
+
+    # (70000, 6, 30, 30, 1)
+
+    images_array = np.zeros
+    # segment train images
+    # load segments into X array
+ 
+    # slice image name for labels
+    # load labels into y array
+
+
+    # split segments into train/test
+
+    # the data, shuffled and split between train and test sets
+    # X_train, y_train, X_test, y_test = 
+    # reshape input into format Conv2D layer likes
+    X_train = X_train.reshape(X_train.shape[0], image_shape[0], image_shape[1], 1)
+    X_test = X_test.reshape(X_test.shape[0], image_shape[0], image_shape[1], 1)
+    X_train = X_train.astype('float32')
+    X_test = X_test.astype('float32')
+    X_train /= 255
+    X_test /= 255
+    print('X_train shape:', X_train.shape)
+    print(X_train.shape[0], 'train samples')
+    print(X_test.shape[0], 'test samples')
+    # convert class vectors to binary class matrices (don't change)
+    Y_train = to_categorical(y_train, nb_classes)  # cool
+    Y_test = to_categorical(y_test, nb_classes)
+    # in Ipython you should compare Y_test to y_test
+
+    #TODO 
+    #* for setting the 36 classes to categorical
+    #* y_cat_train = to_vategorical(y_test, 36)
+    return X_train, X_test, Y_train, Y_test
+
+
+
 
 def define_model(nb_filters, kernel_size, input_shape, pool_size):
     model = Sequential()  # model is a linear stack of layers (don't change)
@@ -52,13 +111,14 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size):
                   metrics=['accuracy'])
     return model
 
-#TODO character-level accuracy for evaluation
+
+
 
 #TODO train/test split for tuning
 
-#TODO from keras.utils.np_utis import to_categorical
-#* for setting the 36 classes to categorical
-#* y_cat_train = to_vategorical(y_test, 36)
+#TODO character-level accuracy for evaluation
+
+
 
 if __name__ == '__main__':
     #! important inputs to the model: don't changes the ones marked KEEP

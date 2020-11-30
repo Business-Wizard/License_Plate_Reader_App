@@ -61,9 +61,8 @@ def holdout_split_directory(directory_input: str=default_interim_directory
 
 if __name__ == '__main__':
     '''get data directory'''
-    current_working_directory = os.getcwd()
     #! update to correct data folder holding your license plate images
-    image_directory = current_working_directory + "/data/external/2_recognition/license_synthetic/license-plates/"
+    image_directory = default_image_directory
 
     '''save processed images with label as filename'''
     #! uncomment and run to process designated folder of images
@@ -73,5 +72,4 @@ if __name__ == '__main__':
     '''split into holdout and train sets'''
     #! uncomment to create holdout and train splits
     # holdout_split_directory(directory_input=default_interim_directory, directory_output=default_processed_directory, test_size=0.3)
-
 
