@@ -43,49 +43,15 @@ def dilate_image(image, ksize: tuple=(5,5), iters: int=1):
     dilated = cv2.dilate(image, kernel_dilation, iterations=iters)
     return dilated
 
-def detect_contours(image):
-    contour_img, contours, hierarchy = cv2.findContours(image.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    sorted_contours = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0])
-    character_bounding_boxes = list()
-
-    for cnt in sorted_contours:
-        x,y,w,h = cv2.boundingRect(cnt)
-        image_width, image_height = image.shape[1], image.shape[0]
-        
-        if h > 0.9*image_height or h < 0.38*image_height:
-            continue
-        elif (h * w) < 0.01*(image_width * image_height):
-            continue
-        elif h / w < 1.1:
-            continue
-        else:
-            cv2.rectangle(contour_img, (x,y), (x+w, y+h),(150,150,150),3)
-            character_bounding_boxes.append((x,y,w,h))
-    return contour_img, character_bounding_boxes
-
-def snip_single_character(image, bounding_box):
-    x, y, w, h = bounding_box
-    return image[y:(y+h), x:(x+w)]
-
-def snip_all_characters(image, bounding_boxes):
-    return [snip_single_character(image, bounding_box) for bounding_box in bounding_boxes]
-
-def standardize_snips(snips: list):
-    snip_lst = snips.copy()
-    for idx, img in enumerate(snip_lst):
-        snip_lst[idx] = cv2.resize(img, (30,30)).astype('float32') / 255
-    return snip_lst
-
 def pipeline_single(filename: str, dilatekernel: tuple=(3,3), blurkernel: tuple=(5,5), div: int=25, gauss: bool=True):
     img = read_image(filename)
     grayscaled = grayscale(img)
     threshed = threshold_image(grayscaled)
     blurred = blur_image(threshed, blurkernel, div, gauss)
     dilated = dilate_image(blurred, dilatekernel)
-    contours = detect_contours(dilated)[1]
-    snips_lst = snip_all_characters(dilated, contours)
-    return standardize_snips(snips_lst)
-     
+    return dilated
+    
+
 # Iterate for folder of images
 def pipeline_bulk(folder: str, dilatekernel: tuple=(3,3), blurkernel: tuple=(5,5), div: int=25, gauss: bool=True):
     pass
@@ -96,9 +62,6 @@ if __name__ == '__main__':
     threshed = threshold_image(grayed)
     blurred = blur_image(threshed, ksize=(7,7), div=25, gauss=True)
     dilated = dilate_image(blurred, ksize=(3,3), iters=1)
-    characters = detect_contours(dilated.copy())[1]
-    character = snip_single_character(img, characters[1])
-    print(characters)
 
     fig, ax = plt.subplots(nrows=3, ncols=2, figsize=(11,6), dpi=200)
     ax[0][0].imshow(img)
@@ -106,7 +69,6 @@ if __name__ == '__main__':
     ax[1][0].imshow(threshed, cmap='gray')
     ax[1][1].imshow(blurred, cmap='gray')
     ax[2][0].imshow(dilated, cmap='gray')
-    ax[2][1].imshow(character,cmap='gray')
     plt.show()
 
     chars_lst = pipeline_single(sample3, dilatekernel=(3,3),blurkernel=(5,5), div=25, gauss=True)
@@ -119,7 +81,7 @@ if __name__ == '__main__':
 
 
     # (1000, 7, 30, 30) = data.shape
-    #* batches of 7 in the CNN
+    #? batches of 7 in the CNN?
     # (images, chracters, rows, cols)
 
     # train on a (1000, 
