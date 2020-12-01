@@ -25,24 +25,18 @@ def thoughts():
     pass
 
 def load_and_featurize_data(source: str=train_directory
-    , image_shape: tuple=(30,30)):
+    , image_shape: tuple=(30,30), sample_frac: float=0.1):
 
     filename_list = os.listdir(source)
     filepath_list = [os.path.join(train_directory, file) for file in filename_list]
-    images_array = np.zeros((480000,7,30,30))
+    images_array = np.empty((480000,7,30,30))
+    images_array.fill(np.nan)
 
-    for idx, filepath in zip(range(len(filepath_list)//100), filepath_list):
-        # segments = segmentation.segment_image(cv2.imread(filepath, 0))
-        # images_array[idx] = segments
-        try:
-            segments = segmentation.segment_image(cv2.imread(filepath, 0))
-            print(len(segments))
-            images_array[idx] = segments
-        except:
-            print("PROBLEM IMAGE")
-            
-            print(filepath)
-            print(cv2.imread(filepath, 0).shape)
+    dataset_size = int(len(filepath_list) * sample_frac)
+    for idx, filepath in zip(range(dataset_size), filepath_list):
+        segments = segmentation.segment_image(cv2.imread(filepath, 0))
+        images_array[idx] = segments
+    print(np.isnan(images_array).shape)
 
     # import matplotlib.pyplot as plt
     # for idx in range(7):
@@ -138,7 +132,7 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size):
 
 
 if __name__ == '__main__':
-    load_and_featurize_data()
+    load_and_featurize_data(train_directory)
     
     #! important inputs to the model: don't changes the ones marked KEEP
     # batch_size = 5000  # number of training samples used at a time to update the weights
@@ -173,3 +167,6 @@ if __name__ == '__main__':
     # serialize weights to HDF5
     # model.save_weights("model.h5")
     # print("Saved weights to disk")
+
+
+    print("COMPLETE")
