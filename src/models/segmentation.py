@@ -31,8 +31,8 @@ def snip_all_characters(image, bounding_boxes):
 
 def standardize_snips(snips: list):
     snip_lst = snips.copy()
-    # for idx, img in enumerate(snip_lst):
-    #     snip_lst[idx] = cv2.resize(img, (30,30)).astype('float32') / 255
+    for idx, img in enumerate(snip_lst):
+        snip_lst[idx] = cv2.resize(img, (30,30)).astype('float32') / 255
     return snip_lst
 
 def segment_image(image):
