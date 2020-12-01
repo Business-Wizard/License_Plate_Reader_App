@@ -1,4 +1,3 @@
-from os.path import split
 from imageprocess import pipeline_single
 import os
 import cv2
@@ -25,7 +24,7 @@ def process_directory(directory_output: str=default_interim_directory
     for image, label, __ in zip(orig_images, image_labels, range(size)):
         old_image_name = os.path.join(directory_input, image)
         new_image_name = directory_output + label + ".png"
-        processed_image = pipeline_single(old_image_name, dilatekernel=(3,3),blurkernel=(5,5), div=25, gauss=True)
+        processed_image = pipeline_single(old_image_name, dilatekernel=(3,3),blurkernel=(5,5), div=15, gauss=True)
         cv2.imwrite(new_image_name, processed_image)
 
 def holdout_split_directory(directory_input: str=default_interim_directory
@@ -66,13 +65,12 @@ if __name__ == '__main__':
 
     '''save processed images with label as filename'''
     #! uncomment and run to process designated folder of images
-    # process_directory(directory_input = default_image_directory,
-    # directory_output=default_interim_directory, size=1)
+    process_directory(directory_input = default_image_directory
+        ,directory_output=default_interim_directory, size=-1)
     
-
     '''split into holdout and train sets'''
     #! uncomment to create holdout and train splits
-    # holdout_split_directory(directory_input=default_interim_directory, directory_output=default_processed_directory, test_size=0.3)
+    holdout_split_directory(directory_input=default_interim_directory, directory_output=default_processed_directory, test_size=0.3)
 
     #! used to correct a single image
     # old_image_name = "./data/interim/2_recognition/39n2191.png"

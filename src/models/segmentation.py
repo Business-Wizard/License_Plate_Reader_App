@@ -11,7 +11,7 @@ def detect_contours(image):
         x,y,w,h = cv2.boundingRect(cnt)
         image_width, image_height = image.shape[1], image.shape[0]
         
-        if h > 0.9*image_height or h < 0.38*image_height:
+        if h > 0.9*image_height or h < 0.41*image_height:
             continue
         # elif (h * w) < 0.01*(image_width * image_height):
         #     continue
