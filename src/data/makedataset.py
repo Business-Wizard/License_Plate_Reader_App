@@ -68,8 +68,14 @@ if __name__ == '__main__':
     #! uncomment and run to process designated folder of images
     # process_directory(directory_input = default_image_directory,
     # directory_output=default_interim_directory, size=1)
+    
 
     '''split into holdout and train sets'''
     #! uncomment to create holdout and train splits
     # holdout_split_directory(directory_input=default_interim_directory, directory_output=default_processed_directory, test_size=0.3)
 
+    #! used to correct a single image
+    # old_image_name = "./data/interim/2_recognition/39n2191.png"
+    # new_image_name = "./data/processed/2_recognition/train_set/39n2191.png"
+    # processed_image = pipeline_single(old_image_name, dilatekernel=(3,3),blurkernel=(5,5), div=25, gauss=True)
+    # cv2.imwrite(new_image_name, processed_image)
