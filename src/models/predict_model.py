@@ -1,9 +1,21 @@
-from src import features
+from processhelpers import holdout_directory, load_data
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.models import load_model
+import processhelpers
 
-#TODO import trained model as model
+
+def load_model_with_weights(model_name: str = "model_full",
+                            directory: str = "./models/"):
+    model = load_model(directory + model_name)
+    return model
+
+
+def load_data_to_predict(source, sample_frac: float = 1.0):
+    images_array, labels_array =\
+         processhelpers.load_data(holdout_directory,
+                                  sample_frac=0.01, predict=True)
+    return X, y
 
 #TODO apply pipeline on new/holdout image(s)
 #! only use if a new image that was not processed!
@@ -13,6 +25,7 @@ from tensorflow.keras.models import load_model
 
 #TODO predict single character segment snip
 # return class predicted
+
 
 #TODO predict full string of character snips for single image
 # plate_predicted = list()
@@ -29,12 +42,15 @@ from tensorflow.keras.models import load_model
 
 
 if __name__ == '__main__':
-    '''load model with weights'''
-    model = load_model("./models/model")
+    model = load_model_with_weights("model_full")
+    X, y = load_data_to_predict(holdout_directory, sample_frac=0.5)
 
-    score = model.evaluate(X_test, y_test, verbose=0)
-    print('Test score:', score[0])
-    print(f'Test accuracy:, {score[1]}')  # this is the one we care about
+    # score = model.evaluate(X_test, y_test, verbose=0)
+    # print('Test score:', score[0])
+    # print(f'Test accuracy:, {score[1]}')  # this is the one we care about
+
+    # predictions_labeled = zip_prediction_labels(predictions)
+
 
 
 

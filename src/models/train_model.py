@@ -9,7 +9,7 @@ from tensorflow.keras.layers import (Dense, Dropout, Activation, Flatten,
 from sklearn.metrics import classification_report
 import tensorflow as tf
 import cv2
-from tensorflow.python.ops.gen_io_ops import save
+from processhelpers import (data_directory, processed_directory, holdout_directory, train_directory)
 import segmentation
 import warnings
 warnings.filterwarnings('ignore')
@@ -28,103 +28,10 @@ if gpus:
         # Memory growth must be set before GPUs have been initialized
         print(e)
 
-data_directory = os.path.join(os.getcwd(), "data")
-processed_directory = os.path.join(data_directory, "processed/2_recognition")
-holdout_directory = os.path.join(processed_directory, "train_set")
-train_directory = os.path.join(processed_directory, "train_set")
-
-
-def load_images(source: str = train_directory,
-                sample_frac: float = 0.01):
-    filename_list = os.listdir(source)
-    filepath_list = [os.path.join(train_directory, file)
-                     for file in filename_list]
-    dataset_size = int(len(filepath_list) * sample_frac)
-    # images_array = np.empty((dataset_size, 7, 30, 30), dtype=np.float32)
-    images_array = np.empty((dataset_size*7, 30, 30), dtype=np.float32)
-    # ! dataset_size * 7  for testing different method
-    print(images_array.shape)
-    print("LOADING IMAGES ARRAY...")
-
-    # for idx, filepath in zip(range(dataset_size), filepath_list):
-    #     segments = segmentation.segment_image(cv2.imread(filepath, 0))
-    #     images_array[idx] = segments
-
-    for idx, filepath in zip(range(0, dataset_size*7, 7), filepath_list):
-        segments = segmentation.segment_image(cv2.imread(filepath, 0))
-        images_array[idx], images_array[idx+1], images_array[idx+2], images_array[idx+3], images_array[idx+4], images_array[idx+5], images_array[idx+6] = segments
-
-    print("DONE LOADING IMAGES")
-    return images_array
-
-
-def load_labels(source: str = train_directory,
-                sample_frac: float = 0.01):
-    filename_list = os.listdir(source)
-
-    labels_list = [file[-11:-4].lower().replace('-', '')
-                   for file in filename_list]
-    dataset_size = int(len(labels_list) * sample_frac)
-    plate_number_length = 7
-    labels_array = np.empty((dataset_size, plate_number_length), dtype='U10')
-    # print("LOADING LABELS ARRAY...")
-    # for idx1, label in zip(range(dataset_size), labels_list):
-    #     for idx2, char in enumerate(label):
-    #         labels_array[idx1, idx2] = char
-
-    labels_array = np.empty((dataset_size*7, 1), dtype='U10')
-    print("LOADING LABELS ARRAY...")
-    for idx1, label in zip(range(0, dataset_size*7, 7), labels_list):
-        for iter, char in enumerate(label):
-            labels_array[idx1+iter] = char
-
-    print("DONE LOADING LABELS")
-    return labels_array
-
-
-def standardize_data(X, y, image_shape: tuple = (30, 30)):
-    X_train, X_test, y_train, y_test = train_test_split(X, y)
-    # reshape input into format Conv2D layer likes
-    X_train = X_train.reshape(X_train.shape[0],
-                                image_shape[0], image_shape[1], 1)
-    X_test = X_test.reshape(X_test.shape[0],
-                            image_shape[0], image_shape[1], 1)
-    X_train = X_train.astype('float32')
-    X_test = X_test.astype('float32')
-    X_train /= 255
-    X_test /= 255
-    return X_train, X_test, y_train, y_test
-
-
-def categorical_encoding(y):
-    encoder = OneHotEncoder(handle_unknown='error', sparse=False)
-    encoder.fit(y)
-    print(encoder.categories_)
-    labels_array = encoder.transform(y)
-    return encoder, labels_array
-
-
-def load_data(source: str = train_directory,
-              sample_frac: float = 0.01):
-
-    images_array = load_images(source, sample_frac)
-    labels_array = load_labels(source, sample_frac)
-    # labels_array = to_categorical(labels_array, num_classes=33)
-    encoder, labels_array = categorical_encoding(labels_array)
-
-    X_train, X_test, y_train, y_test =\
-        standardize_data(images_array, labels_array, image_shape=(30, 30))
-
-    print('X_train shape:', X_train.shape)
-    print('y_train shape:', y_train.shape)
-    print(X_train.shape[0], 'train samples')
-    print(X_test.shape[0], 'test samples')
-    # convert class vectors to binary class matrice (don't change)
-    # Y_train = to_categorical(y_train, num_classes)
-    # Y_test = to_categorical(y_test, num_classes)
-    # in Ipython you should compare Y_test to y_test
-    return X_train, X_test, \
-        y_train, y_test, encoder
+# data_directory = os.path.join(os.getcwd(), "data")
+# processed_directory = os.path.join(data_directory, "processed/2_recognition")
+# holdout_directory = os.path.join(processed_directory, "holdout_set")
+# train_directory = os.path.join(processed_directory, "train_set")
 
 
 def define_model(num_filters, kernel_size, input_shape, pool_size,
