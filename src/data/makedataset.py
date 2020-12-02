@@ -6,17 +6,23 @@ import matplotlib.pyplot as plt
 import shutil
 
 data_directory = os.path.join(os.getcwd(), "data")
-default_image_directory = os.path.join(data_directory, "external/2_recognition/license_synthetic/license-plates")
-default_interim_directory = os.path.join(data_directory, "interim/2_recognition/")
-default_processed_directory = os.path.join(data_directory, "processed/2_recognition/")
+default_image_directory =\
+    os.path.join(data_directory, "external/2_recognition/"
+                                 "license_synthetic/license-plates")
+default_interim_directory = os.path.join(data_directory,
+                                         "interim/2_recognition/")
+default_processed_directory = os.path.join(data_directory,
+                                           "processed/2_recognition/")
+
 
 def get_image_labels(directory: str):
     return [dir.lower().replace('-', '').split('.')[0] for dir in os.listdir(directory)]
 
-def process_directory(directory_output: str=default_interim_directory
-    ,directory_input: str=default_image_directory
-    ,size: int=10):
-    
+
+def process_directory(directory_output: str = default_interim_directory,
+                      directory_input: str = default_image_directory,
+                      size: int = 10):
+
     image_labels = get_image_labels(directory_input)
     orig_images = os.listdir(directory_input)
     if size == -1:
@@ -27,16 +33,17 @@ def process_directory(directory_output: str=default_interim_directory
         processed_image = pipeline_single(old_image_name, dilatekernel=(3,3),blurkernel=(5,5), div=15, gauss=True)
         cv2.imwrite(new_image_name, processed_image)
 
-def holdout_split_directory(directory_input: str=default_interim_directory
-    , directory_output: str=default_processed_directory
-    , test_size: float=0.3):
+
+def holdout_split_directory(directory_input: str = default_interim_directory
+    , directory_output: str = default_processed_directory
+    , test_size: float = 0.3):
 
     filenames = np.array(os.listdir(directory_input))
     np.random.shuffle(filenames)
     
     split_idx = int(len(filenames) * test_size)
-    train_set = filenames[:split_idx]
-    holdout_set = filenames[split_idx:]
+    holdout_set = filenames[:split_idx]
+    train_set = filenames[split_idx:]
 
     print("TRAIN SET...")
     for filename in train_set:
