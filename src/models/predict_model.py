@@ -1,10 +1,11 @@
-import src.features as features
-from tensorflow import keras
+from src import features
 import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.models import load_model
 
 #TODO import trained model as model
 
-#TODO apply pipeline on new image
+#TODO apply pipeline on new/holdout image(s)
 #! only use if a new image that was not processed!
 # return character segment snips
 
@@ -21,25 +22,19 @@ import tensorflow as tf
 
 #TODO predict, for folder of images
 #! apply pipeline only to unseen images!
-#return 
+#return
+
+
+# TODO license-plate level accuracy for evaluation
+
 
 if __name__ == '__main__':
-    '''single load of model + weights'''
-    model = keras.models.load_model("../../models/")
+    '''load model with weights'''
+    model = load_model("./models/model")
 
-    '''load architecture and weights separately'''
-    json_file = open("model.json", "r")
-    loaded_model_json = json_file.read()
-    json_file.close()
-    loaded_model = keras.models.model_from_json(loaded_model_json)
-    loaded_model.load_weights("model.h5")
-    print("Completed loading model from disk")
-
-    
-    score = loaded_model.evaluate(X_test, Y_test, verbose=0)
+    score = model.evaluate(X_test, y_test, verbose=0)
     print('Test score:', score[0])
     print(f'Test accuracy:, {score[1]}')  # this is the one we care about
 
 
-    
-    
+
