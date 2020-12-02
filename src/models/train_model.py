@@ -11,8 +11,22 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import (Dense, Dropout, Activation, Flatten,
                                      Conv2D, MaxPooling2D)
 from sklearn.metrics import classification_report
-# import tensorflow as tf
+import tensorflow as tf
 import cv2
+
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+  try:
+    # Currently, memory growth needs to be the same across GPUs
+    for gpu in gpus:
+      tf.config.experimental.set_memory_growth(gpu, True)
+    logical_gpus = tf.config.experimental.list_logical_devices('GPU')
+    print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+  except RuntimeError as e:
+    # Memory growth must be set before GPUs have been initialized
+    print(e)
+np.random.seed(1337)  # for reproducibility
+
 
 data_directory = os.path.join(os.getcwd(), "data")
 processed_directory = os.path.join(data_directory, "processed/2_recognition")
@@ -82,16 +96,21 @@ def standardize_data(X, y, image_shape: tuple = (30, 30)):
     return X_train, X_test, y_train, y_test
 
 
+def categorical_encoding(y):
+    encoder = OneHotEncoder(handle_unknown='error', sparse=False)
+    encoder.fit(y)
+    print(encoder.categories_)
+    labels_array = encoder.transform(y)
+    return encoder, labels_array
+
+
 def load_data(source: str = train_directory,
               sample_frac: float = 0.01):
 
     images_array = load_images(source, sample_frac)
     labels_array = load_labels(source, sample_frac)
     # labels_array = to_categorical(labels_array, num_classes=33)
-    encoder = OneHotEncoder(handle_unknown='error', sparse=False)
-    encoder.fit(labels_array)
-    print(encoder.categories_)
-    labels_array = encoder.transform(labels_array)
+    encoder, labels_array = categorical_encoding(labels_array)
 
     X_train, X_test, y_train, y_test =\
         standardize_data(images_array, labels_array, image_shape=(30, 30))
@@ -104,7 +123,8 @@ def load_data(source: str = train_directory,
     # Y_train = to_categorical(y_train, nb_classes)
     # Y_test = to_categorical(y_test, nb_classes)
     # in Ipython you should compare Y_test to y_test
-    return X_train, X_test, y_train, y_test
+    return X_train, X_test, \
+        y_train, y_test, encoder
 
 
 def define_model(nb_filters, kernel_size, input_shape, pool_size, nb_classes: int = 33):
@@ -113,15 +133,15 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size, nb_classes: in
     # options: 'linear', 'sigmoid', 'tanh', 'relu', 'softplus', 'softsign'
     model.add(Conv2D(nb_filters,
                      (kernel_size[0], kernel_size[1]),
-                     padding='same', input_shape=input_shape,
+                     padding='valid', input_shape=input_shape,
                      activation='relu'))  # ! 1st conv. layer
     # model.add(Activation('relu'))
     # ! Activation specification necessary for Conv2D and Dense layers
-    # model.add(Conv2D(nb_filters,
-    #                  (kernel_size[0], kernel_size[1]),
-    #                  padding='same', input_shape=input_shape,
-    #                  activation='relu'))  # ! 2nd conv. layer
-    # model.add(Activation('relu'))
+    model.add(Conv2D(nb_filters,
+                     (kernel_size[0], kernel_size[1]),
+                     padding='valid', input_shape=input_shape,
+                     activation='relu'))  # ! 2nd conv. layer
+    model.add(Activation('relu'))
 
     model.add(MaxPooling2D(pool_size=pool_size))
     # decreases size, helps prevent overfitting
@@ -140,10 +160,10 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size, nb_classes: in
     print('Model flattened out to ', model.output_shape)
 
     # now start a typical neural network
-    model.add(Dense(40))
+    model.add(Dense(60))
     # ! (only) 32 neurons in this layer, really?   KEEP
     model.add(Activation('relu'))
-    model.add(Dense(40))
+    model.add(Dense(60))
     # ! (only) 32 neurons in this layer, really?   KEEP
     model.add(Activation('relu'))
 
@@ -164,8 +184,8 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size, nb_classes: in
 
 
 if __name__ == '__main__':
-    X_train, X_test, y_train, y_test =\
-        load_data(train_directory, sample_frac=0.01)
+    X_train, X_test, y_train, y_test, encoder =\
+        load_data(train_directory, sample_frac=0.4)
     print("DATA READY")
 
     # nb_classes = 10  # ! number of output possibilities: [0 - 9] KEEP
@@ -184,15 +204,27 @@ if __name__ == '__main__':
                          pool_size=(2, 2), nb_classes=33)
     print(model.summary())
 
-    batch_size = 100
+    batch_size = 1000
     # number of training samples used at a time to update the weights
-    nb_epoch = 3
+    nb_epoch = 10
 
     model.fit(X_train, y_train, batch_size=batch_size, epochs=nb_epoch,
               verbose=1, validation_data=(X_test, y_test))
     print(model.metrics_names)
     score = model.evaluate(X_test, y_test, verbose=0)
-    predictions = model.predict_classes(X_test)
+    # predictions = model.predict(X_test)  # one-hot encoded
+    # predictions = model.predict_classes(X_test).reshape((-1, 1))  # deprecated
+    predictions = np.argmax(model.predict(X_test), axis=-1).reshape((-1, 1))  # just right
+    y_test = np.argmax(model.predict(X_test), axis=-1).reshape((-1, 1))
+    print(predictions[0:10])
+    print(predictions.shape)
+    print("####################################################")
+    print(y_test[0:10])
+    print(y_test.shape)
+    
+    # y_test = encoder.inverse_transform(predictions)
+    # print(predictions[0:10])
+    # print(predictions.shape)
     print(classification_report(y_test, predictions))
 
     print(f'Test score: {score[0]}')
