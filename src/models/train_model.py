@@ -1,10 +1,6 @@
-import os
 import numpy as np
-from pandas.core.arrays import string_
-from tensorflow.python.ops.gen_io_ops import tf_record_reader_v2_eager_fallback
-from tensorflow.python.ops.gen_math_ops import imag_eager_fallback
-import segmentation
-from tensorflow.keras.utils import to_categorical
+import os
+import matplotlib.pyplot as plt
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Sequential
@@ -13,20 +9,24 @@ from tensorflow.keras.layers import (Dense, Dropout, Activation, Flatten,
 from sklearn.metrics import classification_report
 import tensorflow as tf
 import cv2
+from tensorflow.python.ops.gen_io_ops import save
+import segmentation
+import warnings
+warnings.filterwarnings('ignore')
+np.random.seed(101)  # for reproducibility
 
+# ! to avoid some common specific hardware/environment errors
 gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
-  try:
-    # Currently, memory growth needs to be the same across GPUs
-    for gpu in gpus:
-      tf.config.experimental.set_memory_growth(gpu, True)
-    logical_gpus = tf.config.experimental.list_logical_devices('GPU')
-    print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
-  except RuntimeError as e:
-    # Memory growth must be set before GPUs have been initialized
-    print(e)
-np.random.seed(1337)  # for reproducibility
-
+    try:
+        # Currently, memory growth needs to be the same across GPUs
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+        logical_gpus = tf.config.experimental.list_logical_devices('GPU')
+        print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+    except RuntimeError as e:
+        # Memory growth must be set before GPUs have been initialized
+        print(e)
 
 data_directory = os.path.join(os.getcwd(), "data")
 processed_directory = os.path.join(data_directory, "processed/2_recognition")
@@ -120,56 +120,31 @@ def load_data(source: str = train_directory,
     print(X_train.shape[0], 'train samples')
     print(X_test.shape[0], 'test samples')
     # convert class vectors to binary class matrice (don't change)
-    # Y_train = to_categorical(y_train, nb_classes)
-    # Y_test = to_categorical(y_test, nb_classes)
+    # Y_train = to_categorical(y_train, num_classes)
+    # Y_test = to_categorical(y_test, num_classes)
     # in Ipython you should compare Y_test to y_test
     return X_train, X_test, \
         y_train, y_test, encoder
 
 
-def define_model(nb_filters, kernel_size, input_shape, pool_size, nb_classes: int = 33):
+def define_model(num_filters, kernel_size, input_shape, pool_size,
+                 num_classes: int = 33):
     model = Sequential()  # model is a linear stack of layers (don't change)
     # note: convolutional and dense layers require an activation function
     # options: 'linear', 'sigmoid', 'tanh', 'relu', 'softplus', 'softsign'
-    model.add(Conv2D(nb_filters,
+    model.add(Conv2D(num_filters,
                      (kernel_size[0], kernel_size[1]),
                      padding='valid', input_shape=input_shape,
                      activation='relu'))  # ! 1st conv. layer
-    # model.add(Activation('relu'))
-    # ! Activation specification necessary for Conv2D and Dense layers
-    model.add(Conv2D(nb_filters,
-                     (kernel_size[0], kernel_size[1]),
-                     padding='valid', input_shape=input_shape,
-                     activation='relu'))  # ! 2nd conv. layer
-    model.add(Activation('relu'))
-
     model.add(MaxPooling2D(pool_size=pool_size))
-    # decreases size, helps prevent overfitting
-
-    model.add(Conv2D(nb_filters,
-                     (kernel_size[0], kernel_size[1]),
-                     padding='same', input_shape=input_shape,
-                     activation='relu'))  # ! 3rd conv. layer
-    # model.add(Activation('relu'))
-
     model.add(MaxPooling2D(pool_size=pool_size))
-    # decreases size, helps prevent overfitting
 
     model.add(Flatten())
     # ! necessary to flatten before going into conventional dense layer
     print('Model flattened out to ', model.output_shape)
 
-    # now start a typical neural network
-    model.add(Dense(60))
-    # ! (only) 32 neurons in this layer, really?   KEEP
-    model.add(Activation('relu'))
-    model.add(Dense(60))
-    # ! (only) 32 neurons in this layer, really?   KEEP
-    model.add(Activation('relu'))
-
-    model.add(Dense(nb_classes, activation='softmax'))
-    # ! 10 final nodes (one for each class)
-    # ! softmax at end to pick between classes 0-33 
+    model.add(Dense(20, activation='relu'))
+    model.add(Dense(num_classes, activation='softmax'))
 
     # see https://keras.io/optimizers/#usage-of-optimizers
     # * KEEP loss at 'categorical_crossentropy' for this multiclass problem,
@@ -180,65 +155,59 @@ def define_model(nb_filters, kernel_size, input_shape, pool_size, nb_classes: in
                   metrics=['accuracy'])
     return model
 
-# TODO character-level accuracy for evaluation
+
+def save_model(model, destination: str = "./models/",
+               filename: str = "model"):
+    print("SAVING MODEL")
+    tf.keras.models.save_model(model,
+                               os.path.join(destination, (filename + "_full")),
+                               include_optimizer=True, save_format="h5")
+    model.save_weights(os.path.join(destination, (filename + "_weights")),
+                       save_format="h5")
+
+
+def visualize_history(model):
+    for key in model_history.history.keys():
+        plt.plot(model_history.history[key])
+        plt.title(key)
+        plt.xlabel('epoch')
+        plt.ylabel(key)
+        plt.show()
 
 
 if __name__ == '__main__':
     X_train, X_test, y_train, y_test, encoder =\
-        load_data(train_directory, sample_frac=0.4)
+        load_data(train_directory, sample_frac=0.1)
     print("DATA READY")
 
-    # nb_classes = 10  # ! number of output possibilities: [0 - 9] KEEP
-    # passes through the entire train dataset before weights "final"
-    # img_rows, img_cols = 28, 28   # ! the size of the MNIST images KEEP
-    # input_shape = (img_rows, img_cols, 1)
-    # ! 1 channel image input (grayscale) KEEP
-    # nb_filters = 15  # number of convolutional filters to use
-    # pool_size = (2, 2)
-    # decrease img size, reduce computatn, adds translational invariance
-    # kernel_size = (3, 3)
-    # convolutional kernel size, slides over image to learn features
-
-    model = define_model(nb_filters=32,
+    model = define_model(num_filters=40,
                          kernel_size=(4, 4), input_shape=(30, 30, 1),
-                         pool_size=(2, 2), nb_classes=33)
+                         pool_size=(2, 2), num_classes=33)
     print(model.summary())
 
-    batch_size = 1000
-    # number of training samples used at a time to update the weights
-    nb_epoch = 10
+    model_history = model.fit(X_train, y_train, batch_size=15,
+                              epochs=3, verbose=1,
+                              validation_data=(X_test, y_test))
 
-    model.fit(X_train, y_train, batch_size=batch_size, epochs=nb_epoch,
-              verbose=1, validation_data=(X_test, y_test))
-    print(model.metrics_names)
     score = model.evaluate(X_test, y_test, verbose=0)
-    # predictions = model.predict(X_test)  # one-hot encoded
-    # predictions = model.predict_classes(X_test).reshape((-1, 1))  # deprecated
-    predictions = np.argmax(model.predict(X_test), axis=-1).reshape((-1, 1))  # just right
-    y_test = np.argmax(model.predict(X_test), axis=-1).reshape((-1, 1))
+    # predictions = model.predict(X_test)  #one-hot encoded
+    # predictions = model.predict_classes(X_test).reshape((-1, 1)) #deprecated
+    predictions = np.argmax(model.predict(X_test),
+                            axis=-1).reshape((-1, 1))
+    y_test = np.argmax(y_test, axis=-1).reshape((-1, 1))
     print(predictions[0:10])
     print(predictions.shape)
     print("####################################################")
     print(y_test[0:10])
     print(y_test.shape)
-    
     # y_test = encoder.inverse_transform(predictions)
-    # print(predictions[0:10])
-    # print(predictions.shape)
-    print(classification_report(y_test, predictions))
+    # print(y_test[0:10])
+    # print(y_test.shape)
 
+    print(classification_report(y_test, predictions))
     print(f'Test score: {score[0]}')
     print(f'Test accuracy: {score[1]}')  # this is the one we care about
 
-    '''single save of model + weights'''
-    # model.save("../../models")
+    # visualize_history(model)
 
-    '''save architecture and weights separately'''
-    # serialize model to disk
-    # model_json = model.to_json()
-    # with open("model.json", "w") as json_file:
-    #     json_file.write(model_json)
-
-    # serialize weights to HDF5
-    # model.save_weights("model.h5")
-    # print("Saved weights to disk")
+    save_model(model)
