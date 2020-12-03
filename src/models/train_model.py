@@ -6,9 +6,7 @@ from tensorflow.keras.layers import (Dense, Flatten,
                                      Conv2D, MaxPooling2D)
 from sklearn.metrics import classification_report
 import tensorflow as tf
-from src.models.processhelpers import (data_directory, processed_directory,
-                                       load_test_data, holdout_directory,
-                                       train_directory)
+from src.models.processhelpers import (load_test_data, train_directory)
 import src.models.segmentation as segmentation
 import warnings
 warnings.filterwarnings('ignore')
@@ -83,7 +81,7 @@ def visualize_history(model):
 
 if __name__ == '__main__':
     X_train, X_test, y_train, y_test, encoder =\
-        load_test_data(train_directory, sample_frac=0.1)
+        load_test_data(train_directory, sample_frac=0.01)
     print("DATA READY")
 
     model = define_model(num_filters=40,

@@ -2,7 +2,6 @@ from .imageprocess import pipeline_single
 import os
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
 import shutil
 
 data_directory = os.path.join(os.getcwd(), "data")
@@ -19,8 +18,8 @@ def get_image_labels(directory: str):
     return [dir.lower().replace('-', '').split('.')[0] for dir in os.listdir(directory)]
 
 
-def process_directory(directory_output: str = default_interim_directory,
-                      directory_input: str = default_image_directory,
+def process_directory(directory_input: str = default_image_directory,
+                      directory_output: str = default_interim_directory,
                       size: int = 10):
 
     image_labels = get_image_labels(directory_input)

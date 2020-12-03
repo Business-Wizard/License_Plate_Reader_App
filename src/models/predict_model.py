@@ -1,5 +1,6 @@
 from src.models.processhelpers import (holdout_directory, load_test_data,
-                                       load_unseen_data, zip_prediction_labels)
+                                       load_unseen_data, zip_prediction_labels,
+                                       encoder)
 from src.data import makedataset
 import tensorflow as tf
 from tensorflow.keras.models import load_model
@@ -28,7 +29,7 @@ def load_model_with_weights(model_name: str = "model_full",
 def load_data_to_validate(source, sample_frac: float = 1.0):
     images_array, labels_array, encoder =\
          load_test_data(holdout_directory,
-                        sample_frac=0.01, predict=True)
+                        sample_frac=0.01, validate=True)
     print(f"Images Shape: {images_array.shape}")
     print(f"Labels Shape: {labels_array.shape}")
     return images_array, labels_array, encoder
@@ -36,6 +37,7 @@ def load_data_to_validate(source, sample_frac: float = 1.0):
 
 def validate_model(model: str = "model_full",
                    holdout_data: str = holdout_directory):
+    print("Validating Model")
     model = load_model_with_weights(model)
     X, y, encoder = load_data_to_validate(holdout_directory)
     score = model.evaluate(X, y, verbose=0)
@@ -44,7 +46,8 @@ def validate_model(model: str = "model_full",
     predictions_array = model.predict(X)
     # predictions = np.argmax(predictions_array, axis=-1).reshape(-1, 1)
     predictions_labeled = zip_prediction_labels(predictions_array, encoder)
-    print(predictions_labeled[:5])
+    print(f"Sample predictions: {predictions_labeled[:5]}")
+    print("Completed Validation", '\n')
     return predictions_labeled
 
 
@@ -53,18 +56,27 @@ def load_data_to_predict(source, sample_frac: float = 1.0):
     return X
 
 
-if __name__ == '__main__':
-    validate_model()
-
+def predict_new_images(source, destination):
     model = load_model_with_weights("model_full")
-    unprocessed_images_directory = "./data/raw/"
-    prediction_images_directory = "./data/processed/3_prediction/"
-    makedataset.process_directory(prediction_images_directory,
-                                  unprocessed_images_directory,
+    makedataset.process_directory(unprocessed_images_directory,
+                                  prediction_images_directory,
                                   size=-1)
     X = load_data_to_predict(prediction_images_directory)
     predictions_array = model.predict(X)
-    predictions = np.argmax(predictions_array, axis=-1).reshape(-1, 1)
+    # predictions = np.argmax(predictions_array, axis=-1).reshape(-1, 1)
     predictions_labeled = zip_prediction_labels(predictions_array, encoder)
-    np.savetxt("models/predictions.csv", predictions_labeled,
-               delimiter=",", newline='\n', fmt='%s')
+    return predictions_labeled, X, model
+
+
+if __name__ == '__main__':
+    validate_model()
+
+    # ! Directory with unprocessed images to be read
+    unprocessed_images_directory = "./data/raw/"
+    prediction_images_directory = "./data/processed/3_prediction/"
+    predictions, X, model = predict_new_images(unprocessed_images_directory,
+                                               prediction_images_directory)
+    print(predictions)
+    # ! uncomment to save predictions as a csv
+    # np.savetxt("models/predictions.csv", predictions,
+    #            delimiter=",", newline='\n', fmt='%s')

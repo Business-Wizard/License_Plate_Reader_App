@@ -14,6 +14,13 @@ holdout_directory = os.path.join(processed_directory, "holdout_set")
 train_directory = os.path.join(processed_directory, "train_set")
 prediction_directory = os.path.join(data_directory, "processed/3_prediction/")
 
+encoder = OneHotEncoder(handle_unknown='error', sparse=False)
+categories_array = np.array(
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c',
+     'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+     'r', 's', 't', 'u', 'v', 'y', 'z'], dtype='<U5').reshape((-1, 1))
+encoder.fit(categories_array)
+
 
 def load_images(source: str = train_directory,
                 sample_frac: float = 0.01):
@@ -23,7 +30,7 @@ def load_images(source: str = train_directory,
     dataset_size = int(len(filepath_list) * sample_frac)
     dataset_size = dataset_size if dataset_size >= 1 else 1
     images_array = np.empty((dataset_size*7, 30, 30), dtype=np.float32)
-    print(images_array.shape)
+    print(f"Source Images Shape: {images_array.shape}")
     print("LOADING IMAGES ARRAY...")
 
     for idx, filepath in zip(range(0, dataset_size*7, 7), filepath_list):
@@ -59,7 +66,8 @@ def load_labels(source: str = train_directory,
 
 def standardize_data(X, image_shape: tuple = (30, 30)):
     # reshape input into format Conv2D layer likes
-    X = X.reshape(X.shape[0], image_shape[0], image_shape[1], 1)
+    # X = X.reshape(X.shape[0], image_shape[0], image_shape[1], 1)
+    X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
     X = X.astype('float32')
     X /= 255
     return X
@@ -85,7 +93,8 @@ def load_test_data(source: str = train_directory,
     labels_array = load_labels(source, sample_frac)
     # labels_array = to_categorical(labels_array, num_classes=33)
     encoder, labels_array = categorical_encoding(labels_array)
-    X, y = standardize_data(images_array, labels_array)
+    X = standardize_data(images_array, labels_array)
+    y = labels_array
 
     if validate:
         return X, y, encoder
@@ -112,7 +121,6 @@ def zip_prediction_labels(predictions_array, encoder, plate_length: int = 7):
     predictions_size = len(predictions_array) // plate_length
     prediction_labels = np.empty((predictions_size), dtype='U10')
     predictions = encoder.inverse_transform(predictions_array).flatten()
-    print(predictions.shape)
 
     for idx in range(predictions_size):
         idx2 = idx * plate_length
@@ -121,8 +129,7 @@ def zip_prediction_labels(predictions_array, encoder, plate_length: int = 7):
                 range(plate_length), predictions[idx2:idx2+plate_length]
                 )]
         label = "".join(chars_lst)
-        # print(f'label: {label}')
         prediction_labels[idx] = label
-        # print(f"Predicted: {prediction_labels[idx]}")
+    print(f"Predictions size: {prediction_labels.shape}")
 
     return prediction_labels
