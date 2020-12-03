@@ -47,10 +47,6 @@ def load_labels(source: str = train_directory,
     dataset_size = dataset_size if dataset_size >= 1 else 1
     plate_number_length = 7
     labels_array = np.empty((dataset_size, plate_number_length), dtype='U10')
-    # print("LOADING LABELS ARRAY...")
-    # for idx1, label in zip(range(dataset_size), labels_list):
-    #     for idx2, char in enumerate(label):
-    #         labels_array[idx1, idx2] = char
 
     labels_array = np.empty((dataset_size*7, 1), dtype='U10')
     print("LOADING LABELS ARRAY...")
@@ -73,7 +69,7 @@ def standardize_data(X, y, image_shape: tuple = (30, 30)):
 def categorical_encoding(y):
     encoder = OneHotEncoder(handle_unknown='error', sparse=False)
     encoder.fit(y)
-    print(encoder.categories_)
+    print(f"Categories: {encoder.categories_}")
     labels_array = encoder.transform(y)
     return encoder, labels_array
 
@@ -92,34 +88,48 @@ def load_data(source: str = train_directory,
     encoder, labels_array = categorical_encoding(labels_array)
 
     if predict:
-        return images_array, labels_array
+        images_array, labels_array =\
+            standardize_data(images_array, labels_array, image_shape=(30, 30))
+        return images_array, labels_array, encoder
 
     else:
-        X_train, X_test, y_train, y_test =\
+        X, y =\
             standardize_data(images_array, labels_array, image_shape=(30, 30))
+
+        X_train, X_test, y_train, y_test = split_data(X, y)
         print('X_train shape:', X_train.shape)
         print('y_train shape:', y_train.shape)
         print(X_train.shape[0], 'train samples')
         print(X_test.shape[0], 'test samples')
-        # convert class vectors to binary class matrice (don't change)
-        # Y_train = to_categorical(y_train, num_classes)
-        # Y_test = to_categorical(y_test, num_classes)
-        # in Ipython you should compare Y_test to y_test
+
         return X_train, X_test, \
             y_train, y_test, encoder
 
 
-def zip_prediction_labels(predictions, plate_length: int = 7):
-    predictions_size = len(predictions) // plate_length
-    # create array
-    prediction_labels = np.array((predictions_size, 1))
-    # fill array
-    for idx in prediction_labels:
-        for idx, char in zip(range(plate_length), predictions):
-            label = [char for __, char in zip(range(plate_length),
-                                              predictions)]
-            prediction_labels[idx] = str(label)
-        print(prediction_labels[idx], type(prediction_labels[idx]))
+def zip_prediction_labels(predictions_array, encoder, plate_length: int = 7):
+    predictions_size = len(predictions_array) // plate_length
+    prediction_labels = np.empty((predictions_size), dtype='U10')
+    predictions = encoder.inverse_transform(predictions_array).flatten()
+    print(predictions.shape)
+
+    # for idx, idx2 in zip(
+    #     range(predictions_size), range(0, predictions_size, plate_length)
+    # ):
+    #     chars_lst =\
+    #         [char[0] for __, char in zip(
+    #             range(plate_length), predictions[idx2:idx2+plate_length]
+    #             )]
+    for idx in range(predictions_size):
+        idx2 = idx * plate_length
+        chars_lst =\
+            [char for __, char in zip(
+                range(plate_length), predictions[idx2:idx2+plate_length]
+                )]
+        label = "".join(chars_lst)
+        # print(f'label: {label}')
+        prediction_labels[idx] = label
+        # print(f"Predicted: {prediction_labels[idx]}")
+
     return prediction_labels
 
 

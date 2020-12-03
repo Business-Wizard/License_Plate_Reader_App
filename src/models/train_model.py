@@ -9,7 +9,8 @@ from tensorflow.keras.layers import (Dense, Dropout, Activation, Flatten,
 from sklearn.metrics import classification_report
 import tensorflow as tf
 import cv2
-from processhelpers import (data_directory, processed_directory, holdout_directory, train_directory)
+from processhelpers import (data_directory, processed_directory,
+                            load_data, holdout_directory, train_directory)
 import segmentation
 import warnings
 warnings.filterwarnings('ignore')
@@ -99,7 +100,8 @@ if __name__ == '__main__':
     score = model.evaluate(X_test, y_test, verbose=0)
     # predictions = model.predict(X_test)  #one-hot encoded
     # predictions = model.predict_classes(X_test).reshape((-1, 1)) #deprecated
-    predictions = np.argmax(model.predict(X_test),
+    predictions_array = model.predict(X_test)
+    predictions = np.argmax(predictions_array,
                             axis=-1).reshape((-1, 1))
     y_test = np.argmax(y_test, axis=-1).reshape((-1, 1))
     print(predictions[0:10])
@@ -111,10 +113,11 @@ if __name__ == '__main__':
     # print(y_test[0:10])
     # print(y_test.shape)
 
-    print(classification_report(y_test, predictions))
+    # print(classification_report(y_test, predictions))
     print(f'Test score: {score[0]}')
     print(f'Test accuracy: {score[1]}')  # this is the one we care about
 
     # visualize_history(model)
 
-    save_model(model)
+    # save_model(model)
+    print(encoder.inverse_transform(predictions_array)[0:20])
