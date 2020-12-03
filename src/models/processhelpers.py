@@ -3,7 +3,7 @@ import os
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 import cv2
-import segmentation
+import src.models.segmentation as segmentation
 import warnings
 warnings.filterwarnings('ignore')
 np.random.seed(101)  # for reproducibility
@@ -22,16 +22,15 @@ def load_images(source: str = train_directory,
                      for file in filename_list]
     dataset_size = int(len(filepath_list) * sample_frac)
     dataset_size = dataset_size if dataset_size >= 1 else 1
-    # images_array = np.empty((dataset_size, 7, 30, 30), dtype=np.float32)
     images_array = np.empty((dataset_size*7, 30, 30), dtype=np.float32)
     print(images_array.shape)
     print("LOADING IMAGES ARRAY...")
 
     for idx, filepath in zip(range(0, dataset_size*7, 7), filepath_list):
         segments = segmentation.segment_image(cv2.imread(filepath, 0))
-        images_array[idx], images_array[idx+1], images_array[idx+2],
+        (images_array[idx], images_array[idx+1], images_array[idx+2],
         images_array[idx+3], images_array[idx+4], images_array[idx+5],
-        images_array[idx+6] = segments
+        images_array[idx+6]) = segments
 
     print("DONE LOADING IMAGES")
     return images_array
@@ -86,7 +85,7 @@ def load_test_data(source: str = train_directory,
     labels_array = load_labels(source, sample_frac)
     # labels_array = to_categorical(labels_array, num_classes=33)
     encoder, labels_array = categorical_encoding(labels_array)
-    X, y = standardize_data(images_array, labels_array, image_shape=(30, 30))
+    X, y = standardize_data(images_array, labels_array)
 
     if validate:
         return X, y, encoder

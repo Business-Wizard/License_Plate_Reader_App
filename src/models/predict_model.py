@@ -1,5 +1,5 @@
-from tensorflow.python.keras.utils.generic_utils import validate_config
-from processhelpers import holdout_directory, load_test_data, load_unseen_data, zip_prediction_labels
+from src.models.processhelpers import (holdout_directory, load_test_data,
+                                       load_unseen_data, zip_prediction_labels)
 from src.data import makedataset
 import tensorflow as tf
 from tensorflow.keras.models import load_model
@@ -34,14 +34,15 @@ def load_data_to_validate(source, sample_frac: float = 1.0):
     return images_array, labels_array, encoder
 
 
-def validate_model(model: str = "model_full", holdout_data: str = holdout_directory):
+def validate_model(model: str = "model_full",
+                   holdout_data: str = holdout_directory):
     model = load_model_with_weights(model)
     X, y, encoder = load_data_to_validate(holdout_directory)
     score = model.evaluate(X, y, verbose=0)
     print(f"Test score: {score[0]}")
     print(f"Test accuracy: {score[1]}")
     predictions_array = model.predict(X)
-    predictions = np.argmax(predictions_array, axis=-1).reshape(-1, 1)
+    # predictions = np.argmax(predictions_array, axis=-1).reshape(-1, 1)
     predictions_labeled = zip_prediction_labels(predictions_array, encoder)
     print(predictions_labeled[:5])
     return predictions_labeled

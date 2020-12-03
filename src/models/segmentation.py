@@ -53,17 +53,14 @@ def segment_image(image):
 
 
 if __name__ == "__main__":
-    error1 = "./data/processed/2_recognition/train_set/39n2191.png"
-    error2 = "data/processed/2_recognition/train_set/60lab03.png"
-    filepath=error2
-
+    filepath =  None
     image = cv2.imread(filepath)
-    # print(image.shape)
-    # plt.imshow(image, cmap='gray')
-    # plt.show()
-    
+    print(image.shape)
+    plt.imshow(image, cmap='gray')
+    plt.show()
+
     chars_lst = segment_image(cv2.imread(filepath, 0))
-    fig2, ax2 = plt.subplots(nrows=3, ncols=3, figsize=(11,6), dpi=200)
+    fig2, ax2 = plt.subplots(nrows=3, ncols=3, figsize=(11, 6), dpi=200)
     for idx, ax in enumerate(ax2.flatten()):
         if idx > len(chars_lst)-1:
             break

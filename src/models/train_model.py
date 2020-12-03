@@ -1,17 +1,15 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import (Dense, Dropout, Activation, Flatten,
+from tensorflow.keras.layers import (Dense, Flatten,
                                      Conv2D, MaxPooling2D)
 from sklearn.metrics import classification_report
 import tensorflow as tf
-import cv2
-from processhelpers import (data_directory, processed_directory,
-                            load_data, holdout_directory, train_directory)
-import segmentation
+from src.models.processhelpers import (data_directory, processed_directory,
+                                       load_test_data, holdout_directory,
+                                       train_directory)
+import src.models.segmentation as segmentation
 import warnings
 warnings.filterwarnings('ignore')
 np.random.seed(101)  # for reproducibility
@@ -85,7 +83,7 @@ def visualize_history(model):
 
 if __name__ == '__main__':
     X_train, X_test, y_train, y_test, encoder =\
-        load_data(train_directory, sample_frac=0.1)
+        load_test_data(train_directory, sample_frac=0.1)
     print("DATA READY")
 
     model = define_model(num_filters=40,
@@ -118,6 +116,5 @@ if __name__ == '__main__':
     print(f'Test accuracy: {score[1]}')  # this is the one we care about
 
     # visualize_history(model)
-
     # save_model(model)
     print(encoder.inverse_transform(predictions_array)[0:20])
