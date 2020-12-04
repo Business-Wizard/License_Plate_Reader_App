@@ -2,9 +2,9 @@
 
 ## Using a Convolutional Neural Network to recognize license plates
 
-Author: Joseph Wilson
-
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
+
+Author: Joseph Wilson
 
 [![GitHub followers](https://img.shields.io/github/followers/Business-Wizard.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/Business-Wizard?tab=followers)
 
@@ -31,7 +31,7 @@ Currently there is a huge cost for license plate reading solutions that small bu
 
 ![Unprocessed](./images/Unprocessed.png)
 
-The dataset consisted of 100,000 generated images of Turkish license plates and have pixel dimensions of (1025 x 218).
+The dataset consisted of 100,000 generated images of Turkish license plates and have pixel dimensions of (1025 x 218).  This dataset had been generated in order to address a lack of license plate from the state of Turkey.
 The license plates used 33 characters - 10 numbers and 23 letters (no Q, W, or X).
 The images were originally in color, represented by 3 color channels - Red, Green, Blue (RGB)  In terms of a data array, this translates into a data shape of (100000, 218, 1025, 3).
 
@@ -121,7 +121,10 @@ This project was a long but fruitful success as far as building the first iterat
 However, more work is to be done to make the repository more accessible to the general open source community both for further developement as well as user experience.
 
 - [x] CNN created and validated
-- [ ] Docstrings created & flake8 compliant
+- [x] flake8 compliant
+- [ ] Documentation completed
+- [ ] Pytest suite written
+- [ ] Code refactoring review
 - [ ] Pipeline rebuilt to process noisier images
 - [ ] CNN rebuilt to classify variety of images
 

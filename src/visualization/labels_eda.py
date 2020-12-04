@@ -13,7 +13,8 @@ for idx, label in enumerate(labels_array):
         else:
             counter_dict[char] = 1
 counter_df = pd.DataFrame.from_dict(counter_dict, orient='index')
-# counter_df = pd.DataFrame.from_dict(counter_dict, orient='index', columns=counter_dict.keys)
+# counter_df = pd.DataFrame.from_dict(counter_dict, orient='index',
+#                                     columns=counter_dict.keys)
 # print(counter_df)
 df_display = counter_df.iloc[:, 0].sort_values(axis=0, ascending=False)
 print(df_display)

@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 from src.models.train_model import visualize_history
-from src.models import segmentation
 from src.data.imageprocess import (pipeline_single, read_image,
                                    grayscale, threshold_image, dilate_image,
                                    blur_image, sample_image)

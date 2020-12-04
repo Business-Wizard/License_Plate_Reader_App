@@ -73,7 +73,8 @@ def save_model(model, destination: str = "./models/",
 
 
 def visualize_history(model):
-    title_names = ["Loss", "Accuracy", "Validation Loss", "Validation Accuracy"]
+    title_names = ["Loss", "Accuracy", "Validation Loss",
+                   "Validation Accuracy"]
     fig, ax = plt.subplots(nrows=2, ncols=2, dpi=200, figsize=(11, 6))
     for key, name, ax in zip(model_history.history.keys(),
                              title_names, ax.flatten()):
