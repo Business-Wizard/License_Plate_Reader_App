@@ -4,9 +4,13 @@
 
 Author: Joseph Wilson
 
+[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
+
+[![GitHub followers](https://img.shields.io/github/followers/Business-Wizard.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/Business-Wizard?tab=followers)
+
 ![ALPR](./images/ALPR-100_metin.jpg)
 
------------------------------------------
+---
 
 ## Background
 
@@ -21,7 +25,7 @@ Small businesses and franchise chains can add new features of acknowledging cust
 
 Currently there is a huge cost for license plate reading solutions that small businesses can't leverage. This is why most users of the technology involve Law Enforcement, Parking Garages, and Toll Roads.
 
------------------------------------------------------------------------------
+---
 
 ## Data Description
 
@@ -77,7 +81,6 @@ This diagram is for illustrative purposes, as the CNN model for this phase of th
 
 ![CNN diagram](./images/cnn_diagram.png)
 
-
       1.  Input Character Segment
           - (30, 30, 1)
       2. 40 x Convolution layers
@@ -117,17 +120,20 @@ This project was a long but fruitful success as far as building the first iterat
 
 However, more work is to be done to make the repository more accessible to the general open source community both for further developement as well as user experience.
 
+- [x] CNN created and validated
+- [ ] Docstrings created & flake8 compliant
+- [ ] Pipeline rebuilt to process noisier images
+- [ ] CNN rebuilt to classify variety of images
+
 ## Technology stack
 
    1. python
-   2. keras
-   3. tensorflow
-   4. opencv
-   5. numpy
-   6. scikit-learn
-   7. matplotlib
-   8. seaborn
-   9. flake8
+   2. opencv
+   3. numpy
+   4. keras
+   5. tensorflow
+   6. matplotlib
+   7. flake8
 
 ## Getting Started
 
@@ -145,7 +151,7 @@ However, more work is to be done to make the repository more accessible to the g
 
 Project Organization
 
------------------------------------------
+---
 
     ├── LICENSE
     ├── Makefile           <- Makefile with commands like `make data` or `make train`
@@ -189,7 +195,7 @@ Project Organization
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 
------------------------------------------
+---
 
 Further Reading:
 
