@@ -1,3 +1,12 @@
+# CUSTOMS
+reports/
+tox.ini
+notebooks/
+Makefile
+docs
+references
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -76,9 +85,9 @@ target/
 .ipynb_checkpoints/
 
 # exclude data from source control by default
-data/external/
-data/interim/
-data/processed/
+data/external/*
+data/interim/*
+data/processed/*
 
 
 # Mac OS-specific storage files
