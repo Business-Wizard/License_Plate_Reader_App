@@ -1,10 +1,15 @@
 # CUSTOMS
 reports/
+reports
+/reports/
 tox.ini
 notebooks/
 Makefile
 docs
 references
+references/
+/references/
+/docs/
 
 
 # Byte-compiled / optimized / DLL files
