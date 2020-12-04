@@ -15,7 +15,8 @@ def detect_contours(image):
     character_bounding_boxes = list()
 
     # img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-    # img = cv2.threshold(img, 0, 255, cv2.THRESH_OTSU, cv2.THRESH_BINARY_INV)[1]
+    # img = cv2.threshold(img, 0, 255, cv2.THRESH_OTSU,
+    #                     cv2.THRESH_BINARY_INV)[1]
     # cv2.threshold(img, 0, 255, cv2.THRESH_OTSU, cv2.THRESH_BINARY_INV)[1]
     # cv2.bitwise_not(threshold_image)
 
@@ -41,13 +42,14 @@ def snip_single_character(image, bounding_box):
 
 
 def snip_all_characters(image, bounding_boxes):
-    return [snip_single_character(image, bounding_box) for bounding_box in bounding_boxes]
+    return [snip_single_character(image, bounding_box) for
+            bounding_box in bounding_boxes]
 
 
 def standardize_snips(snips: list):
     snip_lst = snips.copy()
     for idx, img in enumerate(snip_lst):
-        snip_lst[idx] = cv2.resize(img, (30,30)).astype('float32') / 255
+        snip_lst[idx] = cv2.resize(img, (30, 30)).astype('float32') / 255
     return snip_lst
 
 
@@ -58,7 +60,9 @@ def segment_image(image):
 
 
 if __name__ == "__main__":
-    filepath =  None
+    filepath = "/home/joseph/Documents/10_EDUCATION/10_galvanize/"
+    "51_capstones/2_license_plates/license_plate_recognition/data/"
+    "processed/2_recognition/train_set/43ir353.png"
     image = cv2.imread(filepath)
     print(image.shape)
     plt.imshow(image, cmap='gray')

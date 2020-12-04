@@ -6,7 +6,16 @@ raw_images_folder = "./data/raw/"
 sample_image = "./data/raw/17-SAC-73.png"
 
 
-def read_image(filename: str):
+def read_image(filename: str) -> np.ndarray:
+    """Reads a specified image and converts to GBR color scheme used by OpenCV.
+
+    Args:
+        filename (str): Name of an individual unprocessed image.
+
+    Returns:
+        [np.ndarray]: Array of the image data of shape
+                      (height, width, channels)
+    """
     try:
         img = cv2.cvtColor(cv2.imread(filename), cv2.COLOR_RGB2BGR)
     except Exception:
@@ -14,14 +23,32 @@ def read_image(filename: str):
     return img
 
 
-def grayscale(image: np.ndarray):
+def grayscale(image: np.ndarray) -> np.ndarray:
+    """Converts image to a single grayscale channel.
+
+    Args:
+        image (np.ndarray): Image in an RGB or BGR color scheme.
+
+    Returns:
+        [np.ndarray]: Image in a single grayscale channel.
+                      Expected shape: (height, width, 1)
+    """
     try:
         return cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
     except Exception:
         return image
 
 
-def threshold_image(image):
+def threshold_image(image: np.ndarray) -> np.ndarray:
+    """Applies a threshold to the supplied image
+
+    Args:
+        image (np.ndarray): Expecting a grayscaled image,
+                            but can be used more generally.
+
+    Returns:
+        [np.ndarray]: An image array where all values are either 0 or 255
+    """
     threshold_image = cv2.threshold(image, 0, 255, cv2.THRESH_OTSU,
                                     cv2.THRESH_BINARY_INV)[1]
     return cv2.bitwise_not(threshold_image)
@@ -51,10 +78,12 @@ def detect_edges(image):
     return cv2.Canny(image=image, threshold1=lower, threshold2=upper+100)
 
 
-def dilate_image(image, ksize: tuple = (5, 5), iters: int = 1):
+def dilate_image(image, ksize: tuple = (5, 5), iters: int = 1, erode=True):
     kernel_dilation = np.ones(ksize, dtype=np.uint8)
-    # dilated = cv2.dilate(image, kernel_dilation, iterations=iters)
-    dilated = cv2.erode(image, kernel_dilation, iterations=iters)
+    if erode:
+        dilated = cv2.erode(image, kernel_dilation, iterations=iters)
+    else:
+        dilated = cv2.dilate(image, kernel_dilation, iterations=iters)
     return dilated
 
 

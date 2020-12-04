@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+import seaborn as sns
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import (Dense, Flatten,
                                      Conv2D, MaxPooling2D)
@@ -11,6 +12,7 @@ import src.models.segmentation as segmentation
 import warnings
 warnings.filterwarnings('ignore')
 np.random.seed(101)  # for reproducibility
+sns.set_context("notebook")
 
 # ! to avoid some common specific hardware/environment errors
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -71,17 +73,22 @@ def save_model(model, destination: str = "./models/",
 
 
 def visualize_history(model):
-    for key in model_history.history.keys():
-        plt.plot(model_history.history[key])
-        plt.title(key)
-        plt.xlabel('epoch')
-        plt.ylabel(key)
-        plt.show()
+    title_names = ["Loss", "Accuracy", "Validation Loss",
+                   "Validation Accuracy"]
+    fig, ax = plt.subplots(nrows=2, ncols=2, dpi=200, figsize=(11, 6))
+    for key, name, ax in zip(model_history.history.keys(),
+                             title_names, ax.flatten()):
+        ax.plot(model_history.history[key], linewidth=3)
+        ax.set_title(name)
+        ax.set_xlabel('epoch')
+        ax.set_ylabel(key)
+    plt.tight_layout()
+    plt.show()
 
 
 if __name__ == '__main__':
     X_train, X_test, y_train, y_test, encoder =\
-        load_test_data(train_directory, sample_frac=0.01)
+        load_test_data(train_directory, sample_frac=0.2)
     print("DATA READY")
 
     model = define_model(num_filters=40,
@@ -89,8 +96,8 @@ if __name__ == '__main__':
                          pool_size=(2, 2), num_classes=33)
     print(model.summary())
 
-    model_history = model.fit(X_train, y_train, batch_size=15,
-                              epochs=3, verbose=1,
+    model_history = model.fit(X_train, y_train, batch_size=20,
+                              epochs=10, verbose=1,
                               validation_data=(X_test, y_test))
 
     score = model.evaluate(X_test, y_test, verbose=0)
@@ -113,6 +120,6 @@ if __name__ == '__main__':
     print(f'Test score: {score[0]}')
     print(f'Test accuracy: {score[1]}')  # this is the one we care about
 
-    # visualize_history(model)
+    visualize_history(model)
     # save_model(model)
-    print(encoder.inverse_transform(predictions_array)[0:20])
+    # print(encoder.inverse_transform(predictions_array)[0:20])

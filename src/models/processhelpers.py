@@ -35,6 +35,7 @@ def load_images(source: str = train_directory,
 
     for idx, filepath in zip(range(0, dataset_size*7, 7), filepath_list):
         segments = segmentation.segment_image(cv2.imread(filepath, 0))
+        # print(filepath)
         (images_array[idx], images_array[idx+1], images_array[idx+2],
         images_array[idx+3], images_array[idx+4], images_array[idx+5],
         images_array[idx+6]) = segments
