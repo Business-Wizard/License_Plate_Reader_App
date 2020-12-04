@@ -58,7 +58,7 @@ def segment_image(image):
 
 
 if __name__ == "__main__":
-    filepath =  None
+    filepath = "/home/joseph/Documents/10_EDUCATION/10_galvanize/51_capstones/2_license_plates/license_plate_recognition/data/processed/2_recognition/train_set/43ir353.png"
     image = cv2.imread(filepath)
     print(image.shape)
     plt.imshow(image, cmap='gray')

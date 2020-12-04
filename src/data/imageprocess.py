@@ -51,10 +51,12 @@ def detect_edges(image):
     return cv2.Canny(image=image, threshold1=lower, threshold2=upper+100)
 
 
-def dilate_image(image, ksize: tuple = (5, 5), iters: int = 1):
+def dilate_image(image, ksize: tuple = (5, 5), iters: int = 1, erode=True):
     kernel_dilation = np.ones(ksize, dtype=np.uint8)
-    # dilated = cv2.dilate(image, kernel_dilation, iterations=iters)
-    dilated = cv2.erode(image, kernel_dilation, iterations=iters)
+    if erode:
+        dilated = cv2.erode(image, kernel_dilation, iterations=iters)
+    else:
+        dilated = cv2.dilate(image, kernel_dilation, iterations=iters)
     return dilated
 
 
