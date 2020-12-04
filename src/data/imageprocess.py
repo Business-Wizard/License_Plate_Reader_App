@@ -2,15 +2,8 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-file_folder = "../../data/external/2_recognition/license_synthetic/"
-"sample_subset/"
-sample1 = "data/external/2_recognition/license_synthetic/"
-"sample_subset/18-H-3396.png"
-sample2 = "data/external/2_recognition/license_synthetic/"
-"license-plates/80-ZYY-26.png"
-sample3 = "data/external/2_recognition/license_synthetic/"
-"license-plates/75-LA-311.png"
+raw_images_folder = "./data/raw/"
+sample_image = "./data/raw/17-SAC-73.png"
 
 
 def read_image(filename: str):
@@ -77,16 +70,4 @@ def pipeline_single(filename: str, dilatekernel: tuple = (3, 3),
 
 
 if __name__ == '__main__':
-    img = read_image(sample3)
-    grayed = grayscale(img)
-    threshed = threshold_image(grayed)
-    dilated = dilate_image(threshed, ksize=(5, 5), iters=1)
-    blurred = blur_image(dilated, ksize=(3, 3), div=15, gauss=True)
-
-    fig, ax = plt.subplots(nrows=3, ncols=2, figsize=(11, 6), dpi=200)
-    ax[0][0].imshow(img)
-    ax[0][1].imshow(grayed, cmap='gray')
-    ax[1][0].imshow(threshed, cmap='gray')
-    ax[1][1].imshow(dilated, cmap='gray')
-    ax[2][0].imshow(blurred, cmap='gray')
-    plt.show()
+    pass

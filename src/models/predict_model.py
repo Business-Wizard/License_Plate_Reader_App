@@ -39,6 +39,7 @@ def validate_model(model: str = "model_full",
                    holdout_data: str = holdout_directory):
     print("Validating Model")
     model = load_model_with_weights(model)
+    print(model.summary())
     X, y, encoder = load_data_to_validate(holdout_directory)
     score = model.evaluate(X, y, verbose=0)
     print(f"Test score: {score[0]}")

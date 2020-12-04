@@ -33,13 +33,13 @@ def process_directory(directory_input: str = default_image_directory,
         cv2.imwrite(new_image_name, processed_image)
 
 
-def holdout_split_directory(directory_input: str = default_interim_directory
-    , directory_output: str = default_processed_directory
-    , test_size: float = 0.3):
+def holdout_split_directory(directory_input: str = default_interim_directory,
+    directory_output: str = default_processed_directory,
+    test_size: float = 0.3):
 
     filenames = np.array(os.listdir(directory_input))
     np.random.shuffle(filenames)
-    
+
     split_idx = int(len(filenames) * test_size)
     holdout_set = filenames[:split_idx]
     train_set = filenames[split_idx:]
@@ -71,12 +71,12 @@ if __name__ == '__main__':
 
     '''save processed images with label as filename'''
     #! uncomment and run to process designated folder of images
-    process_directory(directory_input = default_image_directory
-        ,directory_output=default_interim_directory, size=-1)
-    
+    # process_directory(directory_input=default_image_directory,
+                    #   directory_output=default_interim_directory, size=-1)
+
     '''split into holdout and train sets'''
     #! uncomment to create holdout and train splits
-    holdout_split_directory(directory_input=default_interim_directory, directory_output=default_processed_directory, test_size=0.3)
+    # holdout_split_directory(directory_input=default_interim_directory, directory_output=default_processed_directory, test_size=0.3)
 
     #! used to correct a single image
     # old_image_name = "./data/interim/2_recognition/39n2191.png"
