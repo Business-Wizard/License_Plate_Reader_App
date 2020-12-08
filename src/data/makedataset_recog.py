@@ -60,7 +60,6 @@ def holdout_split_directory(directory_input: str = default_interim_directory,
         shutil.copy(source, destination)
 
     print("DONE")
-
     # label_names = [label.replace(".png", "")for label in filenames]
     # X_train, X_holdout, y_train, y_holdout = train_test_split(images_array
     #     , label_names, test_size=0.3, random_state=101)
