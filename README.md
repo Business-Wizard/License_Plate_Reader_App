@@ -81,8 +81,8 @@ This diagram is for illustrative purposes, as the CNN model for this phase of th
 
 ![CNN diagram](./images/cnn_diagram.png)
 
-      1.  Input Character Segment
-          - (30, 30, 1)
+      1. Input Character Segment
+         - (30, 30, 1)
       2. 40 x Convolution layers
          - Kernel size (4, 4), no padding
          - output (27, 27, 40)
