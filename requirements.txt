@@ -15,6 +15,8 @@ Sphinx
 coverage
 awscli
 flake8
+flask==1.1.2
+fLask-restful==0.3.8
 
 # init:
 # pip -r requirements.txt
