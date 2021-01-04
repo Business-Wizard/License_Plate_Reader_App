@@ -26,11 +26,13 @@ def index():
 @app.route('/upload', methods=['GET'])
 def upload():
     # TODO Flask upload feature to get image
+    # TODO navigate to /predict
     pass
 
 
+# * may not be necessary (do upload & predict in /upload)
 @app.route('/predict', methods=['GET', 'POST'])
-def predict():
+def get_prediction():
     if request.method == 'POST':
         file = request.files['file']
         if file.filename != '':
