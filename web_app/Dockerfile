@@ -10,12 +10,17 @@ RUN apt-get update -y && \
 # We copy just the requirements.txt first to leverage Docker cache
 COPY web_app/requirements.txt /app/requirements.txt
 
+COPY src /app/src
+COPY . /app
+
+ENV PYTHONPATH "${PYTHONPATH}:/app/src"
+ENV GOOGLE_APPLICATION_CREDENTIALS "web_app/credentials/radiant-rookery-300603-6c38b0481439.json"
+
 WORKDIR /app
 
 RUN pip install -r requirements.txt
 
-COPY src /app/src
-COPY . /app
+EXPOSE 31000
 
 ENTRYPOINT [ "python" ]
 
