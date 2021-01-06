@@ -1,7 +1,7 @@
 from src.models.processhelpers import (holdout_directory, load_test_data,
                                        load_unseen_data, zip_prediction_labels,
                                        encoder)
-from src.data import makedataset
+from src.data import makedataset_recog
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 import numpy as np
@@ -68,6 +68,11 @@ def predict_new_images(source, destination):
     predictions_labeled = zip_prediction_labels(predictions_array, encoder)
     return predictions_labeled, X, model
 
+def predict_single_image(processed_image):
+    model = load_model_with_weights("model_full")
+    prediction = model.predict(processed_image)
+    prediction_labeled = zip_prediction_labels(prediction, encoder)
+    return prediction_labeled
 
 if __name__ == '__main__':
     validate_model()
