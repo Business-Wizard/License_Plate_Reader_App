@@ -1,4 +1,4 @@
-# import cv2
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -96,6 +96,12 @@ def pipeline_single(filename: str, dilatekernel: tuple = (3, 3),
     dilated = dilate_image(threshed, dilatekernel)
     blurred = blur_image(dilated, blurkernel, div, gauss)
     return blurred
+
+
+def save_image(filename, image):
+    cv2.imwrite(filename, image)
+    return None
+
 
 
 if __name__ == '__main__':
