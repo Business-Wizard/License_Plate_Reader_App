@@ -2,15 +2,15 @@
 # * for GPU based tensorflow training
 FROM ubuntu:16.04
 
-MAINTANER Joseph Wilson "jowi.legal.ia+dev@gmail.com"
+LABEL "Author"="Joseph_Wilson"
 
 RUN apt-get update -y && \
     apt-get install -y python-pip python-dev
 
 # We copy just the requirements.txt first to leverage Docker cache
-COPY web_app/requirements.txt /app/requirements.txt
+COPY ./requirements.txt /app/requirements.txt
 
-COPY src /app/src
+COPY ./src /app/src
 COPY . /app
 
 ENV PYTHONPATH "${PYTHONPATH}:/app/src"
