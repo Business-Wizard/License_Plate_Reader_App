@@ -1,8 +1,8 @@
 jupyter_notebooks*
-*/env*
-*/venv*
+**/env*
+**/venv*
 .circleci*
-data
+**/data
 *.env
 *.log
 .git
