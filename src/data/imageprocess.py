@@ -99,7 +99,9 @@ def pipeline_single(filename: str, dilatekernel: tuple = (3, 3),
 
 
 def save_image(filename, image):
-    cv2.imwrite(filename, image)
+    img = np.array(image)
+    print(img.shape)
+    cv2.imwrite(filename, img)
     return None
 
 

@@ -1,5 +1,6 @@
 import os
 import pickle
+from src.models.processhelpers import load_single_image, load_unseen_data
 import sys
 import numpy as np
 import pandas as pd
@@ -37,93 +38,71 @@ def allowed_file(filename):
 
 
 def predict_license_plate(model, img_path):
-    processed_image = pipeline_single(img_path)
-    prediction = predict_single_image(processed_image)
+    print(type(img_path))
+    print(img_path)
+    image = pipeline_single(img_path)  # blurred image
+    # image = load_single_image(image)
+    prediction = predict_single_image(image, model)
     return prediction
 
 
 # home page
-@app.route('/', methods=['GET'])
-def index():
-    if request.method == 'GET':
-        # return render_template('index.html')
-        return redirect(url_for('upload_image'))
-    # TODO render button to route to upload page
+@app.route('/')
+def upload_form():
+    return render_template('upload.html')
 
 
-@app.route('/upload/', methods=['GET', 'POST'])
+@app.route('/', methods=['POST'])
 def upload_image():
-    if request.method == 'GET':
-        return render_template('upload.html')
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
 
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
+    file = request.files['file']
+    if file.filename == '':
+        flash('No image selected for uploading')
+        return redirect(request.url)
 
-        files = request.files.getlist('files[]')
-        file_names = []
-        for file in files:
-            # if file.filename == '':
-            #     flash('No image selected for uploading')
-            #     return redirect(request.url)
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file_names.append(filename)
-                session['raw_image'] = filename
-                print(f'upload_image filename: {filename}')
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                # ! os.remove(os.path.join(app.config['UPLOAD_FOLDER'],
-                                    #    filename))
-            else:
-                flash('Allowed image types are -> png, jpg, jpeg, gif')
-                return redirect(request.url)
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        print(f'upload_image filename: {filename}')
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        session['raw_image'] = filename
 
-            return render_template('upload.html', filenames=file_names)
+        preds =\
+            predict_license_plate(model,
+                                  os.path.join(app.config['UPLOAD_FOLDER'],
+                                               filename))
+        preds = str(preds) if len(preds) == 1 else preds
+        print(type(preds), preds)
+        preds_name = 'predicted_' + filename
+        session['prediction'] = preds
+        print("#######################",
+              filename, preds_name, preds,
+              type(filename), type(preds_name))
+        # ! os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return redirect(url_for('uploaded_file'))
 
-
-            '''
-            preds =\
-                predict_license_plate(model,
-                                      os.path.join(app.config['UPLOAD_FOLDER'],
-                                                   filename))
-            preds_name = 'predicted_' + filename
-            save_image(os.path.join(app.config['UPLOAD_FOLDER'],
-                                    preds_name),
-                       preds)
-            print("#######################",
-                  filename, preds_name,
-                  type(filename), type(preds_name))
-            return redirect(url_for('display_image', raw_image=filename,
-                                    processed=preds_name))
-            '''
-
-
-@app.route('/display/<raw_image>&<processed>/')
-def display_image(raw_image, processed):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], processed),\
-           send_from_directory(app.config['UPLOAD_FOLDER'], raw_image)
-    # ! display both images
-
-
-'''
-# * may not be necessary (do upload & predict in /upload)
-@app.route('/predict/', methods=['GET'])
-def get_prediction():
-    pass
-    return preds
     else:
-        return "No Image Received"
-'''
+        flash('Allowed image types are -> png, jpg, jpeg, gif')
+        return redirect(request.url)
 
+
+@app.route('/display/')
+def uploaded_file():
+    prediction = session.get('prediction')
+    original_image = session['raw_image']
+    raw_image = os.path.join(app.config['UPLOAD_FOLDER'], original_image)
+    return render_template("results.html", raw_image=raw_image,
+                           prediction_text=prediction)
+    return send_from_directory(app.config['UPLOAD_FOLDER'], original_image), prediction
 
 
 if __name__ == '__main__':
     model = load_model('models/model_full')
     print('Model loaded. Start serving...')
 
-    # http_server = WSGIServer(('0.0.0.0',31000), app)
+    # http_server = WSGIServer(('0.0.0.0', 31000), app)
     # http_server.serve_forever()
 
     app.run(host='0.0.0.0', port=31000, threaded=True, debug=False)
