@@ -1,7 +1,7 @@
-from src.models.processhelpers import (holdout_directory, load_test_data,
+from src.models.processhelpers import (holdout_directory, load_single_image, load_test_data,
                                        load_unseen_data, zip_prediction_labels,
                                        encoder)
-from src.data import makedataset
+from src.data.makedataset_recog import process_directory
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 import numpy as np
@@ -59,14 +59,27 @@ def load_data_to_predict(source, sample_frac: float = 1.0):
 
 def predict_new_images(source, destination):
     model = load_model_with_weights("model_full")
-    makedataset.process_directory(unprocessed_images_directory,
-                                  prediction_images_directory,
-                                  size=-1)
+    process_directory(unprocessed_images_directory,
+                      prediction_images_directory,
+                      size=-1)
     X = load_data_to_predict(prediction_images_directory)
     predictions_array = model.predict(X)
     # predictions = np.argmax(predictions_array, axis=-1).reshape(-1, 1)
     predictions_labeled = zip_prediction_labels(predictions_array, encoder)
     return predictions_labeled, X, model
+
+
+def predict_single_image(processed_image, model):
+    if not model:
+        model = load_model_with_weights("model_full")
+    X = load_single_image(processed_image)
+    X = X.reshape(X.shape[0], X.shape[1], X.shape[2], 1)
+    X = X.astype('float32')
+    X /= 255
+    print(type(X), X.shape)
+    prediction = model.predict(X)
+    prediction_labeled = zip_prediction_labels(prediction, encoder)
+    return prediction_labeled
 
 
 if __name__ == '__main__':

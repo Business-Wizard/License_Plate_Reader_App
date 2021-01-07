@@ -1,4 +1,4 @@
-from .imageprocess import pipeline_single
+from src.data.imageprocess import pipeline_single
 import os
 import cv2
 import numpy as np

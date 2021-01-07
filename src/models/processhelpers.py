@@ -44,6 +44,18 @@ def load_images(source: str = train_directory,
     return images_array
 
 
+def load_single_image(source):
+    images_array = np.empty((7, 30, 30), dtype=np.float32)
+    print(f"Source Images Shape: {images_array.shape}")
+    print("LOADING IMAGES ARRAY...")
+    segments = segmentation.segment_image(source)
+    (images_array[0], images_array[1], images_array[2],
+     images_array[3], images_array[4], images_array[5],
+     images_array[6]) = segments
+    print("DONE LOADING IMAGES")
+    return images_array
+
+
 def load_labels(source: str = train_directory,
                 sample_frac: float = 0.01):
     filename_list = os.listdir(source)

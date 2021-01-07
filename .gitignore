@@ -6,10 +6,10 @@ tox.ini
 notebooks/
 Makefile
 docs
-references
 references/
 /references/
 /docs/
+/web_app/credentials/
 
 
 # Byte-compiled / optimized / DLL files

@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 
 
 def detect_contours(image):
+    print(f"Shape of image for contour detection: {image.shape}")
     img = image.copy()
     try:
         contours, hierarchy =\
