@@ -20,7 +20,7 @@ UPLOAD_FOLDER = os.getcwd() + '/web_app/static/uploads/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 SESSION_TYPE = 'filesystem'
 SESSION_FILE_DIR = os.getcwd() + "flask_session"
-SESSION_FILE_THRESHOLD = 10
+SESSION_FILE_THRESHOLD = 5
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -67,13 +67,14 @@ def upload_image():
         filename = secure_filename(file.filename)
         print(f'upload_image filename: {filename}')
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        session['raw_image'] = filename
+        session['raw_image'] = os.path.join(
+            app.config['UPLOAD_FOLDER'], filename)
 
         preds =\
             predict_license_plate(model,
                                   os.path.join(app.config['UPLOAD_FOLDER'],
                                                filename))
-        preds = str(preds) if len(preds) == 1 else preds
+        preds = str(preds[0]) if len(preds) == 1 else preds
         print(type(preds), preds)
         preds_name = 'predicted_' + filename
         session['prediction'] = preds
@@ -81,7 +82,7 @@ def upload_image():
               filename, preds_name, preds,
               type(filename), type(preds_name))
         # ! os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return redirect(url_for('uploaded_file'))
+        return redirect(url_for('display_image'))
 
     else:
         flash('Allowed image types are -> png, jpg, jpeg, gif')
@@ -89,13 +90,16 @@ def upload_image():
 
 
 @app.route('/display/')
-def uploaded_file():
+def display_image():
     prediction = session.get('prediction')
-    original_image = session['raw_image']
-    raw_image = os.path.join(app.config['UPLOAD_FOLDER'], original_image)
-    return render_template("results.html", raw_image=raw_image,
-                           prediction_text=prediction)
-    return send_from_directory(app.config['UPLOAD_FOLDER'], original_image), prediction
+    raw_image = session['raw_image']
+    # raw_image = os.path.join(app.config['UPLOAD_FOLDER'], original_image)
+    # return redirect(url_for('static', filename='uploads/' + raw_image), code=301)
+    return render_template("results.html",
+                           raw_image=raw_image,
+                           prediction=prediction)
+                           # ! get image displayed!!
+    # return send_from_directory(app.config['UPLOAD_FOLDER'], original_image), prediction
 
 
 if __name__ == '__main__':
@@ -106,5 +110,4 @@ if __name__ == '__main__':
     # http_server.serve_forever()
 
     app.run(host='0.0.0.0', port=31000, threaded=True, debug=False)
-
 
