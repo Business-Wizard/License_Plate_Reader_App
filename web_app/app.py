@@ -67,8 +67,7 @@ def upload_image():
         filename = secure_filename(file.filename)
         print(f'upload_image filename: {filename}')
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        session['raw_image'] = os.path.join(
-            app.config['UPLOAD_FOLDER'], filename)
+        session['raw_image'] = filename
 
         preds =\
             predict_license_plate(model,
@@ -89,13 +88,13 @@ def upload_image():
         return redirect(request.url)
 
 
-@app.route('/display/<prediction>')
+@app.route('/display/')
 def display_image():
     prediction = session.get('prediction')
     raw_image = session['raw_image']
+    print(raw_image)
     # raw_image = os.path.join(app.config['UPLOAD_FOLDER'], original_image)
     # return redirect(url_for('static', filename='uploads/' + raw_image), code=301)
-    print(raw_image)
     return render_template("results.html",
                            raw_image=raw_image,
                            prediction=prediction)
