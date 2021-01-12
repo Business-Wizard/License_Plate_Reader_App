@@ -10,7 +10,7 @@
     </head>
     <body>
         <h1>How close was the model?</h1>
-        <img src="{{ url_for(raw_image) }}">
-        <img src="{{ url_for('static/uploads', filename=raw_image) }}">
+        <a href="{{ url_for('static', filename= '/uploads' + raw_image) }}"> BUTTON </a>
+        <p> {{ prediction }} </p>
     </body>
 </html>
