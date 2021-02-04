@@ -93,7 +93,7 @@ def display_image():
     prediction = session.get('prediction')
     raw_image = session['raw_image']
     print(raw_image)
-    # raw_image = os.path.join(app.config['UPLOAD_FOLDER'], original_image)
+    # raw_image = SavedModel file does not exist at: models/model_full/{saved_model.pbtxt|saved_model.pb}(app.config['UPLOAD_FOLDER'], original_image)
     # return redirect(url_for('static', filename='uploads/' + raw_image), code=301)
     return render_template("results.html",
                            raw_image=raw_image,
@@ -103,7 +103,8 @@ def display_image():
 
 
 if __name__ == '__main__':
-    model = load_model('models/model_full')
+    model_location = os.getcwd() + "/models/model_full"
+    model = load_model(model_location)
     print('Model loaded. Start serving...')
 
     # http_server = WSGIServer(('0.0.0.0', 31000), app)
