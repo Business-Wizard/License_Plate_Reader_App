@@ -13,7 +13,7 @@ def detect_contours(image):
             cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     sorted_contours = sorted(contours,
                              key=lambda ctr: cv2.boundingRect(ctr)[0])
-    character_bounding_boxes = list()
+    character_bounding_boxes = []
 
     # img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
     # img = cv2.threshold(img, 0, 255, cv2.THRESH_OTSU,
@@ -27,13 +27,8 @@ def detect_contours(image):
 
         if h > 0.9*image_height or h < 0.41*image_height:
             continue
-        # elif (h * w) < 0.01*(image_width * image_height):
-        #     continue
-        # elif h / w < 1.1:
-        #     continue
-        else:
-            cv2.rectangle(img, (x, y), (x+w, y+h), (150, 150, 150), 1)
-            character_bounding_boxes.append((x, y, w, h))
+        cv2.rectangle(img, (x, y), (x+w, y+h), (150, 150, 150), 1)
+        character_bounding_boxes.append((x, y, w, h))
     return img, character_bounding_boxes
 
 

@@ -41,9 +41,7 @@ def predict_license_plate(model, img_path):
     print(type(img_path))
     print(img_path)
     image = pipeline_single(img_path)  # blurred image
-    # image = load_single_image(image)
-    prediction = predict_single_image(image, model)
-    return prediction
+    return predict_single_image(image, model)
 
 
 # home page
@@ -75,7 +73,7 @@ def upload_image():
                                                filename))
         preds = str(preds[0]) if len(preds) == 1 else preds
         print(type(preds), preds)
-        preds_name = 'predicted_' + filename
+        preds_name = f'predicted_{filename}'
         session['prediction'] = preds
         print("#######################",
               filename, preds_name, preds,

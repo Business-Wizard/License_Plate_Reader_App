@@ -61,14 +61,10 @@ def display_hist(image, channel: int = 0):
 
 
 def blur_image(image: np.ndarray, ksize: tuple, div: int, gauss: bool):
-    # ! div=1 removes State section! (unintended feature)
-    if gauss:
-        kernel = np.ones(shape=ksize, dtype=np.float32) / div
-        gauss_blurred = cv2.filter2D(image, -1, kernel)
-        return gauss_blurred
-    else:
-        median_blurred = cv2.medianBlur(image, ksize[0])
-        return median_blurred
+    if not gauss:
+        return cv2.medianBlur(image, ksize[0])
+    kernel = np.ones(shape=ksize, dtype=np.float32) / div
+    return cv2.filter2D(image, -1, kernel)
 
 
 def detect_edges(image):
@@ -80,11 +76,11 @@ def detect_edges(image):
 
 def dilate_image(image, ksize: tuple = (5, 5), iters: int = 1, erode=True):
     kernel_dilation = np.ones(ksize, dtype=np.uint8)
-    if erode:
-        dilated = cv2.erode(image, kernel_dilation, iterations=iters)
-    else:
-        dilated = cv2.dilate(image, kernel_dilation, iterations=iters)
-    return dilated
+    return (
+        cv2.erode(image, kernel_dilation, iterations=iters)
+        if erode
+        else cv2.dilate(image, kernel_dilation, iterations=iters)
+    )
 
 
 def pipeline_single(filename: str, dilatekernel: tuple = (3, 3),
@@ -94,8 +90,7 @@ def pipeline_single(filename: str, dilatekernel: tuple = (3, 3),
     grayscaled = grayscale(img)
     threshed = threshold_image(grayscaled)
     dilated = dilate_image(threshed, dilatekernel)
-    blurred = blur_image(dilated, blurkernel, div, gauss)
-    return blurred
+    return blur_image(dilated, blurkernel, div, gauss)
 
 
 def save_image(filename, image):
@@ -106,5 +101,4 @@ def save_image(filename, image):
 
 
 
-if __name__ == '__main__':
-    pass
+pass

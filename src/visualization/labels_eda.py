@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 labels_array = load_labels(holdout_directory)
-counter_dict = dict()
-for idx, label in enumerate(labels_array):
+counter_dict = {}
+for label in labels_array:
     for char in label:
         if counter_dict.get(char, False):
             counter_dict[char] += 1

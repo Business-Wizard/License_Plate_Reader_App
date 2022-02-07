@@ -6,9 +6,7 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 import numpy as np
 
-# ! to avoid some common hardware/environment errors
-gpus = tf.config.experimental.list_physical_devices('GPU')
-if gpus:
+if gpus := tf.config.experimental.list_physical_devices('GPU'):
     try:
         # Currently, memory growth needs to be the same across GPUs
         for gpu in gpus:
@@ -22,8 +20,7 @@ if gpus:
 
 def load_model_with_weights(model_name: str = "model_full",
                             directory: str = "./models/"):
-    model = load_model(directory + model_name)
-    return model
+    return load_model(directory + model_name)
 
 
 def load_data_to_validate(source, sample_frac: float = 1.0):
@@ -53,8 +50,7 @@ def validate_model(model: str = "model_full",
 
 
 def load_data_to_predict(source, sample_frac: float = 1.0):
-    X = load_unseen_data(source, sample_frac)
-    return X
+    return load_unseen_data(source, sample_frac)
 
 
 def predict_new_images(source, destination):
@@ -78,8 +74,7 @@ def predict_single_image(processed_image, model):
     X /= 255
     print(type(X), X.shape)
     prediction = model.predict(X)
-    prediction_labeled = zip_prediction_labels(prediction, encoder)
-    return prediction_labeled
+    return zip_prediction_labels(prediction, encoder)
 
 
 if __name__ == '__main__':

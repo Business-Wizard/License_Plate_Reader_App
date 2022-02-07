@@ -14,9 +14,7 @@ warnings.filterwarnings('ignore')
 np.random.seed(101)  # for reproducibility
 sns.set_context("notebook")
 
-# ! to avoid some common specific hardware/environment errors
-gpus = tf.config.experimental.list_physical_devices('GPU')
-if gpus:
+if gpus := tf.config.experimental.list_physical_devices('GPU'):
     try:
         # Currently, memory growth needs to be the same across GPUs
         for gpu in gpus:
@@ -68,8 +66,9 @@ def save_model(model, destination: str = "./models/",
     tf.keras.models.save_model(model,
                                os.path.join(destination, (filename + "_full")),
                                include_optimizer=True, save_format="h5")
-    model.save_weights(os.path.join(destination, (filename + "_weights")),
-                       save_format="h5")
+    model.save_weights(
+        os.path.join(destination, f'{filename}_weights'), save_format="h5"
+    )
 
 
 def visualize_history(model):
@@ -107,10 +106,10 @@ if __name__ == '__main__':
     predictions = np.argmax(predictions_array,
                             axis=-1).reshape((-1, 1))
     y_test = np.argmax(y_test, axis=-1).reshape((-1, 1))
-    print(predictions[0:10])
+    print(predictions[:10])
     print(predictions.shape)
     print("####################################################")
-    print(y_test[0:10])
+    print(y_test[:10])
     print(y_test.shape)
     # y_test = encoder.inverse_transform(predictions)
     # print(y_test[0:10])

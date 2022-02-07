@@ -28,7 +28,7 @@ def load_images(source: str = train_directory,
     filepath_list = [os.path.join(source, file)
                      for file in filename_list]
     dataset_size = int(len(filepath_list) * sample_frac)
-    dataset_size = dataset_size if dataset_size >= 1 else 1
+    dataset_size = max(dataset_size, 1)
     images_array = np.empty((dataset_size*7, 30, 30), dtype=np.float32)
     print(f"Source Images Shape: {images_array.shape}")
     print("LOADING IMAGES ARRAY...")
@@ -63,7 +63,7 @@ def load_labels(source: str = train_directory,
     labels_list = [file[-11:-4].lower().replace('-', '')
                    for file in filename_list]
     dataset_size = int(len(labels_list) * sample_frac)
-    dataset_size = dataset_size if dataset_size >= 1 else 1
+    dataset_size = max(dataset_size, 1)
     plate_number_length = 7
     labels_array = np.empty((dataset_size, plate_number_length), dtype='U10')
 
@@ -112,22 +112,20 @@ def load_test_data(source: str = train_directory,
     if validate:
         return X, y, encoder
 
-    else:
-        X_train, X_test, y_train, y_test = split_data(X, y)
-        print('X_train shape:', X_train.shape)
-        print('y_train shape:', y_train.shape)
-        print(X_train.shape[0], 'train samples')
-        print(X_test.shape[0], 'test samples')
+    X_train, X_test, y_train, y_test = split_data(X, y)
+    print('X_train shape:', X_train.shape)
+    print('y_train shape:', y_train.shape)
+    print(X_train.shape[0], 'train samples')
+    print(X_test.shape[0], 'test samples')
 
-        return X_train, X_test, \
-            y_train, y_test, encoder
+    return X_train, X_test, \
+        y_train, y_test, encoder
 
 
 def load_unseen_data(source: str = prediction_directory,
                      sample_frac: float = 1.0):
     images_array = load_images(source, sample_frac)
-    X = standardize_data(images_array, image_shape=(30, 30))
-    return X
+    return standardize_data(images_array, image_shape=(30, 30))
 
 
 def zip_prediction_labels(predictions_array, encoder, plate_length: int = 7):
