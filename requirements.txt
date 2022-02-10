@@ -17,7 +17,7 @@ awscli
 flake8
 flask==1.1.2
 fLask-restful==0.3.8
-tensorflow-gpu==2.5.2
+tensorflow-gpu==2.5.3
 
 # init:
 # pip -r requirements.txt
