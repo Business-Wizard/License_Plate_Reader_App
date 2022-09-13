@@ -1,0 +1,109 @@
+{
+    "[git-commit]": {
+        "editor.rulers": [
+            50
+        ]
+    },
+    "audioCues.lineHasInlineSuggestion": "on",
+    "better-comments.highlightPlainText": true,
+    "debug.console.fontFamily": "Fira Code, default",
+    "diffEditor.codeLens": true,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "diffEditor.renderIndicators": false,
+    "diffEditor.renderSideBySide": false,
+    "editor.acceptSuggestionOnEnter": "off",
+    "editor.accessibilitySupport": "off",
+    "editor.autoClosingBrackets": "never",
+    "editor.autoClosingDelete": "never",
+    "editor.autoClosingQuotes": "never",
+    "editor.codeLensFontFamily": "Fira Code",
+    "editor.cursorBlinking": "expand",
+    "editor.fontFamily": "Fira Code, Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontLigatures": true,
+    "editor.formatOnSave": true,
+    "editor.guides.bracketPairs": "active",
+    "editor.inlayHints.fontFamily": "Fira Code",
+    "editor.matchBrackets": "near",
+    "editor.minimap.maxColumn": 50,
+    "editor.minimap.showSlider": "always",
+    "editor.minimap.size": "fill",
+    "editor.quickSuggestionsDelay": 20,
+    "editor.renderWhitespace": "trailing",
+    "editor.rulers": [
+        {
+            "color": "#ffffff1b",
+            "column": 79
+        },
+        {
+            "color": "#b6f50b1d",
+            "column": 100
+        },
+        {
+            "color": "#1aff001d",
+            "column": 120
+        }
+    ],
+    "editor.semanticHighlighting.enabled": true,
+    "editor.unicodeHighlight.includeComments": true,
+    "editor.wordWrap": "bounded",
+    "editor.wordWrapColumn": 121,
+    "editor.wrappingIndent": "deepIndent",
+    "editor.wrappingStrategy": "advanced",
+    "explorer.confirmDragAndDrop": false,
+    "explorer.incrementalNaming": "smart",
+    "explorer.sortOrder": "type",
+    "files.associations": {
+        "*.py": "python"
+    },
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "git.allowForcePush": true,
+    "git.allowNoVerifyCommit": true,
+    "git.enableCommitSigning": true,
+    "git.mergeEditor": false,
+    "gitlens.advanced.messages": {
+        "suppressCreatePullRequestPrompt": true
+    },
+    "jupyter.pylanceHandlesNotebooks": true,
+    "markdown.preview.fontFamily": "Fira Code,-apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif",
+    "merge-conflict.autoNavigateNextConflict.enabled": true,
+    "python.analysis.completeFunctionParens": true,
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": false,
+    "python.analysis.typeCheckingMode": "basic",
+    "python.diagnostics.sourceMapsEnabled": true,
+    "python.formatting.blackArgs": [
+        "--line-length 100",
+        "--S"
+    ],
+    "python.formatting.provider": "black",
+    "python.languageServer": "Pylance",
+    "python.linting.flake8Args": [
+        "--max-line-length=100"
+    ],
+    "python.linting.flake8Enabled": true,
+    "python.linting.mypyArgs": [
+        "--follow-imports=silent",
+        "--ignore-missing-imports",
+        "--show-column-numbers",
+        "--no-pretty",
+        "--continue-on-collection-errors",
+        "--show-error-codes",
+        "--warn-unused-ignores"
+    ],
+    "python.linting.mypyEnabled": true,
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "search.searchEditor.reusePriorSearchConfiguration": true,
+    "sourcery.token": "",
+    "terminal.integrated.cursorBlinking": true,
+    "terminal.integrated.cursorStyle": "line",
+    "terminal.integrated.cursorWidth": 2,
+    "terminal.integrated.inheritEnv": false,
+    "terminal.integrated.localEchoEnabled": "on",
+    "terminal.integrated.shellIntegration.enabled": true,
+    "window.zoomLevel": 1,
+    "workbench.editor.pinnedTabSizing": "shrink",
+    "workbench.iconTheme": "vscode-icons"
+}
