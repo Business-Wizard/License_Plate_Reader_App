@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "license-plate-reader-app"
+version = "1.0.0"
+description = ""
+authors = ["Business-Data-Wizard  <49175856+Business-Wizard@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10, <3.12"
+tensorflow = "<2.12.0"
+matplotlib = "^3.7.1"
+numpy = "^1.24.3"
+scikit-learn = "^1.2.2"
+seaborn = "^0.12.2"
+pandas = "^2.0.1"
+flask = "^2.3.2"
+opencv-python = "^4.7.0.72"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
