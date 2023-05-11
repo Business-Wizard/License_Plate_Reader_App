@@ -16,25 +16,14 @@ def detect_contours(image):
     sorted_contours = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0])
     character_bounding_boxes = []
 
-    # img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-    # img = cv2.threshold(img, 0, 255, cv2.THRESH_OTSU,
-    #                     cv2.THRESH_BINARY_INV)[1]
-    # cv2.threshold(img, 0, 255, cv2.THRESH_OTSU, cv2.THRESH_BINARY_INV)[1]
-    # cv2.bitwise_not(threshold_image)
-
     for cnt in sorted_contours:
         x, y, w, h = cv2.boundingRect(cnt)
-        image_width, image_height = image.shape[1], image.shape[0]
+        _image_width, image_height = image.shape[1], image.shape[0]
 
-        if h > 0.9 * image_height or h < 0.41 * image_height:
-            continue
-        # elif (h * w) < 0.01*(image_width * image_height):
-        #     continue
-        # elif h / w < 1.1:
-        #     continue
-        else:
+        if _is_character := 0.40 < h / image_height < 0.9:
             cv2.rectangle(img, (x, y), (x + w, y + h), (150, 150, 150), 1)
             character_bounding_boxes.append((x, y, w, h))
+
     return img, character_bounding_boxes
 
 
