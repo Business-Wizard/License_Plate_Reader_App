@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.keras.models import load_model
+from keras.models import load_model
 
 from src.data.makedataset_recog import process_directory
 from src.models.processhelpers import (
