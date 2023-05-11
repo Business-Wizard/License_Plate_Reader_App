@@ -1,7 +1,4 @@
 from src.models.processhelpers import load_labels, holdout_directory
-from src.models import segmentation
-import seaborn as sns
-import matplotlib.pyplot as plt
 import pandas as pd
 
 labels_array = load_labels(holdout_directory)

@@ -3,7 +3,7 @@ import os
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 import cv2
-import src.models.segmentation as segmentation
+from src.models import segmentation
 import warnings
 warnings.filterwarnings('ignore')
 np.random.seed(101)  # for reproducibility

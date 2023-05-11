@@ -1,14 +1,9 @@
 import os
-import pickle
-from src.models.processhelpers import load_single_image, load_unseen_data
-import sys
-import numpy as np
-import pandas as pd
-from src.data.imageprocess import pipeline_single, save_image
+from src.data.imageprocess import pipeline_single
 from src.models.predict_model import predict_single_image
 
 from flask import (Flask, redirect, render_template, request, url_for,
-                   flash, send_from_directory, session)
+                   flash, session)
 # import flask_session
 from werkzeug.utils import secure_filename
 import secrets

@@ -102,7 +102,6 @@ def save_image(filename, image):
     img = np.array(image)
     print(img.shape)
     cv2.imwrite(filename, img)
-    return None
 
 
 

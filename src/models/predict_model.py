@@ -4,7 +4,6 @@ from src.models.processhelpers import (holdout_directory, load_single_image, loa
 from src.data.makedataset_recog import process_directory
 import tensorflow as tf
 from tensorflow.keras.models import load_model
-import numpy as np
 
 # ! to avoid some common hardware/environment errors
 gpus = tf.config.experimental.list_physical_devices('GPU')

@@ -5,10 +5,8 @@ import seaborn as sns
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import (Dense, Flatten,
                                      Conv2D, MaxPooling2D)
-from sklearn.metrics import classification_report
 import tensorflow as tf
 from src.models.processhelpers import (load_test_data, train_directory)
-import src.models.segmentation as segmentation
 import warnings
 warnings.filterwarnings('ignore')
 np.random.seed(101)  # for reproducibility
