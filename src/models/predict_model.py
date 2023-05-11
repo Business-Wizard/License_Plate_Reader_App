@@ -27,6 +27,7 @@ if gpus:
 
 def load_model_with_weights(model_name: str = 'model_full', directory: str = './models/') -> Model:
     model = load_model(directory + model_name)
+    assert isinstance(model, Model)
     return model
 
 
