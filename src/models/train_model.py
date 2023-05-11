@@ -1,13 +1,15 @@
-import numpy as np
 import os
-import matplotlib.pyplot as plt
-import seaborn as sns
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import (Dense, Flatten,
-                                     Conv2D, MaxPooling2D)
-import tensorflow as tf
-from src.models.processhelpers import (load_test_data, train_directory)
 import warnings
+
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+import tensorflow as tf
+from tensorflow.keras.layers import Conv2D, Dense, Flatten, MaxPooling2D
+from tensorflow.keras.models import Sequential
+
+from src.models.processhelpers import load_test_data, train_directory
+
 warnings.filterwarnings('ignore')
 np.random.seed(101)  # for reproducibility
 sns.set_context("notebook")

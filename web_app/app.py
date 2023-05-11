@@ -1,15 +1,14 @@
 import os
-from src.data.imageprocess import pipeline_single
-from src.models.predict_model import predict_single_image
-
-from flask import (Flask, redirect, render_template, request, url_for,
-                   flash, session)
-# import flask_session
-from werkzeug.utils import secure_filename
 import secrets
 
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 from tensorflow.keras.models import load_model
 
+# import flask_session
+from werkzeug.utils import secure_filename
+
+from src.data.imageprocess import pipeline_single
+from src.models.predict_model import predict_single_image
 
 UPLOAD_FOLDER = os.getcwd() + '/web_app/static/uploads/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}

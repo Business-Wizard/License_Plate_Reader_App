@@ -1,5 +1,6 @@
-from src.models.processhelpers import load_labels, holdout_directory
 import pandas as pd
+
+from src.models.processhelpers import holdout_directory, load_labels
 
 labels_array = load_labels(holdout_directory)
 counter_dict = dict()

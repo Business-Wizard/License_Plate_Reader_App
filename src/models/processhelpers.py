@@ -1,10 +1,13 @@
-import numpy as np
 import os
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.model_selection import train_test_split
-import cv2
-from src.models import segmentation
 import warnings
+
+import cv2
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
+
+from src.models import segmentation
+
 warnings.filterwarnings('ignore')
 np.random.seed(101)  # for reproducibility
 

@@ -1,8 +1,10 @@
-from src.data.imageprocess import pipeline_single
 import os
+import shutil
+
 import cv2
 import numpy as np
-import shutil
+
+from src.data.imageprocess import pipeline_single
 
 data_directory = os.path.join(os.getcwd(), "data")
 default_image_directory =\

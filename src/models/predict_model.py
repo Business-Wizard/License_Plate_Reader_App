@@ -1,9 +1,15 @@
-from src.models.processhelpers import (holdout_directory, load_single_image, load_test_data,
-                                       load_unseen_data, zip_prediction_labels,
-                                       encoder)
-from src.data.makedataset_recog import process_directory
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+
+from src.data.makedataset_recog import process_directory
+from src.models.processhelpers import (
+    encoder,
+    holdout_directory,
+    load_single_image,
+    load_test_data,
+    load_unseen_data,
+    zip_prediction_labels,
+)
 
 # ! to avoid some common hardware/environment errors
 gpus = tf.config.experimental.list_physical_devices('GPU')

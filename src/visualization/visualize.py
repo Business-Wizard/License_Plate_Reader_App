@@ -1,10 +1,17 @@
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
-from src.models.train_model import visualize_history
-from src.data.imageprocess import (pipeline_single, read_image,
-                                   grayscale, threshold_image, dilate_image,
-                                   blur_image, sample_image)
+
+from src.data.imageprocess import (
+    blur_image,
+    dilate_image,
+    grayscale,
+    pipeline_single,
+    read_image,
+    sample_image,
+    threshold_image,
+)
 from src.models.segmentation import detect_contours, segment_image
+from src.models.train_model import visualize_history
 
 
 def visualize_image_process(grouped=True):
