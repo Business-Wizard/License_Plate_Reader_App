@@ -25,23 +25,21 @@ if gpus:
         print(e)
 
 
-def load_model_with_weights(model_name: str = "model_full",
-                            directory: str = "./models/"):
+def load_model_with_weights(model_name: str = "model_full", directory: str = "./models/"):
     model = load_model(directory + model_name)
     return model
 
 
 def load_data_to_validate(source, sample_frac: float = 1.0):
-    images_array, labels_array, encoder =\
-         load_test_data(holdout_directory,
-                        sample_frac=0.01, validate=True)
+    images_array, labels_array, encoder = load_test_data(
+        holdout_directory, sample_frac=0.01, validate=True
+    )
     print(f"Images Shape: {images_array.shape}")
     print(f"Labels Shape: {labels_array.shape}")
     return images_array, labels_array, encoder
 
 
-def validate_model(model: str = "model_full",
-                   holdout_data: str = holdout_directory):
+def validate_model(model: str = "model_full", holdout_data: str = holdout_directory):
     print("Validating Model")
     model = load_model_with_weights(model)
     print(model.summary())
@@ -64,9 +62,7 @@ def load_data_to_predict(source, sample_frac: float = 1.0):
 
 def predict_new_images(source, destination):
     model = load_model_with_weights("model_full")
-    process_directory(unprocessed_images_directory,
-                      prediction_images_directory,
-                      size=-1)
+    process_directory(unprocessed_images_directory, prediction_images_directory, size=-1)
     X = load_data_to_predict(prediction_images_directory)
     predictions_array = model.predict(X)
     # predictions = np.argmax(predictions_array, axis=-1).reshape(-1, 1)
@@ -93,8 +89,9 @@ if __name__ == '__main__':
     # ! Directory with unprocessed images to be read
     unprocessed_images_directory = "./data/raw/"
     prediction_images_directory = "./data/processed/3_prediction/"
-    predictions, X, model = predict_new_images(unprocessed_images_directory,
-                                               prediction_images_directory)
+    predictions, X, model = predict_new_images(
+        unprocessed_images_directory, prediction_images_directory
+    )
     print(predictions)
     # ! uncomment to save predictions as a csv
     # np.savetxt("models/predictions.csv", predictions,

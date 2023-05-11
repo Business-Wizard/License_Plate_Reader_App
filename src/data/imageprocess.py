@@ -49,14 +49,12 @@ def threshold_image(image: np.ndarray) -> np.ndarray:
     Returns:
         [np.ndarray]: An image array where all values are either 0 or 255
     """
-    threshold_image = cv2.threshold(image, 0, 255, cv2.THRESH_OTSU,
-                                    cv2.THRESH_BINARY_INV)[1]
+    threshold_image = cv2.threshold(image, 0, 255, cv2.THRESH_OTSU, cv2.THRESH_BINARY_INV)[1]
     return cv2.bitwise_not(threshold_image)
 
 
 def display_hist(image, channel: int = 0):
-    hist_values = cv2.calcHist([image], channels=[0], mask=None,
-                               histSize=[256], ranges=[0, 256])
+    hist_values = cv2.calcHist([image], channels=[0], mask=None, histSize=[256], ranges=[0, 256])
     plt.plot(hist_values)
 
 
@@ -73,9 +71,9 @@ def blur_image(image: np.ndarray, ksize: tuple, div: int, gauss: bool):
 
 def detect_edges(image):
     med_val = np.median(image)
-    lower = int(max(0, 0.07*med_val))
-    upper = int(min(255, 1.3*med_val))
-    return cv2.Canny(image=image, threshold1=lower, threshold2=upper+100)
+    lower = int(max(0, 0.07 * med_val))
+    upper = int(min(255, 1.3 * med_val))
+    return cv2.Canny(image=image, threshold1=lower, threshold2=upper + 100)
 
 
 def dilate_image(image, ksize: tuple = (5, 5), iters: int = 1, erode=True):
@@ -87,9 +85,13 @@ def dilate_image(image, ksize: tuple = (5, 5), iters: int = 1, erode=True):
     return dilated
 
 
-def pipeline_single(filename: str, dilatekernel: tuple = (3, 3),
-                    blurkernel: tuple = (5, 5), div: int = 25,
-                    gauss: bool = True):
+def pipeline_single(
+    filename: str,
+    dilatekernel: tuple = (3, 3),
+    blurkernel: tuple = (5, 5),
+    div: int = 25,
+    gauss: bool = True,
+):
     img = read_image(filename)
     grayscaled = grayscale(img)
     threshed = threshold_image(grayscaled)
@@ -102,7 +104,6 @@ def save_image(filename, image):
     img = np.array(image)
     print(img.shape)
     cv2.imwrite(filename, img)
-
 
 
 if __name__ == '__main__':

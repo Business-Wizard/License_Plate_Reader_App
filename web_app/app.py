@@ -26,8 +26,7 @@ app.secret_key = secret
 
 def allowed_file(filename):
     has_extension = '.' in filename
-    extension_allowed = filename.rsplit('.', 1)[1]\
-        .lower() in ALLOWED_EXTENSIONS
+    extension_allowed = filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
     return has_extension and extension_allowed
 
 
@@ -63,17 +62,14 @@ def upload_image():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         session['raw_image'] = filename
 
-        preds =\
-            predict_license_plate(model,
-                                  os.path.join(app.config['UPLOAD_FOLDER'],
-                                               filename))
+        preds = predict_license_plate(model, os.path.join(app.config['UPLOAD_FOLDER'], filename))
         preds = str(preds[0]) if len(preds) == 1 else preds
         print(type(preds), preds)
         preds_name = 'predicted_' + filename
         session['prediction'] = preds
-        print("#######################",
-              filename, preds_name, preds,
-              type(filename), type(preds_name))
+        print(
+            "#######################", filename, preds_name, preds, type(filename), type(preds_name)
+        )
         # ! os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         return redirect(url_for('display_image'))
 
@@ -89,10 +85,8 @@ def display_image():
     print(raw_image)
     # raw_image = SavedModel file does not exist at: models/model_full/{saved_model.pbtxt|saved_model.pb}(app.config['UPLOAD_FOLDER'], original_image)
     # return redirect(url_for('static', filename='uploads/' + raw_image), code=301)
-    return render_template("results.html",
-                           raw_image=raw_image,
-                           prediction=prediction)
-                           # ! get image displayed!!
+    return render_template("results.html", raw_image=raw_image, prediction=prediction)
+    # ! get image displayed!!
     # return send_from_directory(app.config['UPLOAD_FOLDER'], original_image), prediction
 
 

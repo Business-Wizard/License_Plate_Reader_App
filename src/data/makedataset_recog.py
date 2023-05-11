@@ -7,24 +7,22 @@ import numpy as np
 from src.data.imageprocess import pipeline_single
 
 data_directory = os.path.join(os.getcwd(), "data")
-default_image_directory =\
-    os.path.join(data_directory, "external/2_recognition/"
-                                 "license_synthetic/license-plates")
-default_interim_directory = os.path.join(data_directory,
-                                         "interim/2_recognition/")
-default_processed_directory = os.path.join(data_directory,
-                                           "processed/2_recognition/")
+default_image_directory = os.path.join(
+    data_directory, "external/2_recognition/" "license_synthetic/license-plates"
+)
+default_interim_directory = os.path.join(data_directory, "interim/2_recognition/")
+default_processed_directory = os.path.join(data_directory, "processed/2_recognition/")
 
 
 def get_image_labels(directory: str):
-    return [dir.lower().replace('-', '').split('.')[0] for
-            dir in os.listdir(directory)]
+    return [dir.lower().replace('-', '').split('.')[0] for dir in os.listdir(directory)]
 
 
-def process_directory(directory_input: str = default_image_directory,
-                      directory_output: str = default_interim_directory,
-                      size: int = 10):
-
+def process_directory(
+    directory_input: str = default_image_directory,
+    directory_output: str = default_interim_directory,
+    size: int = 10,
+):
     image_labels = get_image_labels(directory_input)
     orig_images = os.listdir(directory_input)
     if size == -1:
@@ -32,17 +30,17 @@ def process_directory(directory_input: str = default_image_directory,
     for image, label, __ in zip(orig_images, image_labels, range(size)):
         old_image_name = os.path.join(directory_input, image)
         new_image_name = directory_output + label + ".png"
-        processed_image = pipeline_single(old_image_name, dilatekernel=(3, 3),
-                                          blurkernel=(5, 5), div=15,
-                                          gauss=True)
+        processed_image = pipeline_single(
+            old_image_name, dilatekernel=(3, 3), blurkernel=(5, 5), div=15, gauss=True
+        )
         cv2.imwrite(new_image_name, processed_image)
 
 
-def holdout_split_directory(directory_input: str = default_interim_directory,
-                            directory_output: str =
-                            default_processed_directory,
-                            test_size: float = 0.3):
-
+def holdout_split_directory(
+    directory_input: str = default_interim_directory,
+    directory_output: str = default_processed_directory,
+    test_size: float = 0.3,
+):
     filenames = np.array(os.listdir(directory_input))
     np.random.shuffle(filenames)
 
@@ -65,7 +63,6 @@ def holdout_split_directory(directory_input: str = default_interim_directory,
     # label_names = [label.replace(".png", "")for label in filenames]
     # X_train, X_holdout, y_train, y_holdout = train_test_split(images_array
     #     , label_names, test_size=0.3, random_state=101)
-
 
 
 if __name__ == '__main__':

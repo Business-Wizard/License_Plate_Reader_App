@@ -19,29 +19,67 @@ prediction_directory = os.path.join(data_directory, "processed/3_prediction/")
 
 encoder = OneHotEncoder(handle_unknown='error', sparse=False)
 categories_array = np.array(
-    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c',
-     'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
-     'r', 's', 't', 'u', 'v', 'y', 'z'], dtype='<U5').reshape((-1, 1))
+    [
+        '0',
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+        'a',
+        'b',
+        'c',
+        'd',
+        'e',
+        'f',
+        'g',
+        'h',
+        'i',
+        'j',
+        'k',
+        'l',
+        'm',
+        'n',
+        'o',
+        'p',
+        'r',
+        's',
+        't',
+        'u',
+        'v',
+        'y',
+        'z',
+    ],
+    dtype='<U5',
+).reshape((-1, 1))
 encoder.fit(categories_array)
 
 
-def load_images(source: str = train_directory,
-                sample_frac: float = 0.01):
+def load_images(source: str = train_directory, sample_frac: float = 0.01):
     filename_list = os.listdir(source)
-    filepath_list = [os.path.join(source, file)
-                     for file in filename_list]
+    filepath_list = [os.path.join(source, file) for file in filename_list]
     dataset_size = int(len(filepath_list) * sample_frac)
     dataset_size = dataset_size if dataset_size >= 1 else 1
-    images_array = np.empty((dataset_size*7, 30, 30), dtype=np.float32)
+    images_array = np.empty((dataset_size * 7, 30, 30), dtype=np.float32)
     print(f"Source Images Shape: {images_array.shape}")
     print("LOADING IMAGES ARRAY...")
 
-    for idx, filepath in zip(range(0, dataset_size*7, 7), filepath_list):
+    for idx, filepath in zip(range(0, dataset_size * 7, 7), filepath_list):
         segments = segmentation.segment_image(cv2.imread(filepath, 0))
         # print(filepath)
-        (images_array[idx], images_array[idx+1], images_array[idx+2],
-        images_array[idx+3], images_array[idx+4], images_array[idx+5],
-        images_array[idx+6]) = segments
+        (
+            images_array[idx],
+            images_array[idx + 1],
+            images_array[idx + 2],
+            images_array[idx + 3],
+            images_array[idx + 4],
+            images_array[idx + 5],
+            images_array[idx + 6],
+        ) = segments
 
     print("DONE LOADING IMAGES")
     return images_array
@@ -52,29 +90,33 @@ def load_single_image(source):
     print(f"Source Images Shape: {images_array.shape}")
     print("LOADING IMAGES ARRAY...")
     segments = segmentation.segment_image(source)
-    (images_array[0], images_array[1], images_array[2],
-     images_array[3], images_array[4], images_array[5],
-     images_array[6]) = segments
+    (
+        images_array[0],
+        images_array[1],
+        images_array[2],
+        images_array[3],
+        images_array[4],
+        images_array[5],
+        images_array[6],
+    ) = segments
     print("DONE LOADING IMAGES")
     return images_array
 
 
-def load_labels(source: str = train_directory,
-                sample_frac: float = 0.01):
+def load_labels(source: str = train_directory, sample_frac: float = 0.01):
     filename_list = os.listdir(source)
 
-    labels_list = [file[-11:-4].lower().replace('-', '')
-                   for file in filename_list]
+    labels_list = [file[-11:-4].lower().replace('-', '') for file in filename_list]
     dataset_size = int(len(labels_list) * sample_frac)
     dataset_size = dataset_size if dataset_size >= 1 else 1
     plate_number_length = 7
     labels_array = np.empty((dataset_size, plate_number_length), dtype='U10')
 
-    labels_array = np.empty((dataset_size*7, 1), dtype='U10')
+    labels_array = np.empty((dataset_size * 7, 1), dtype='U10')
     print("LOADING LABELS ARRAY...")
-    for idx1, label in zip(range(0, dataset_size*7, 7), labels_list):
+    for idx1, label in zip(range(0, dataset_size * 7, 7), labels_list):
         for iter, char in enumerate(label):
-            labels_array[idx1+iter] = char
+            labels_array[idx1 + iter] = char
 
     print("DONE LOADING LABELS")
     return labels_array
@@ -102,9 +144,9 @@ def split_data(X, y):
     return X_train, X_test, y_train, y_test
 
 
-def load_test_data(source: str = train_directory,
-                   sample_frac: float = 0.01, validate: bool = False):
-
+def load_test_data(
+    source: str = train_directory, sample_frac: float = 0.01, validate: bool = False
+):
     images_array = load_images(source, sample_frac)
     labels_array = load_labels(source, sample_frac)
     # labels_array = to_categorical(labels_array, num_classes=33)
@@ -122,12 +164,10 @@ def load_test_data(source: str = train_directory,
         print(X_train.shape[0], 'train samples')
         print(X_test.shape[0], 'test samples')
 
-        return X_train, X_test, \
-            y_train, y_test, encoder
+        return X_train, X_test, y_train, y_test, encoder
 
 
-def load_unseen_data(source: str = prediction_directory,
-                     sample_frac: float = 1.0):
+def load_unseen_data(source: str = prediction_directory, sample_frac: float = 1.0):
     images_array = load_images(source, sample_frac)
     X = standardize_data(images_array, image_shape=(30, 30))
     return X
@@ -140,10 +180,9 @@ def zip_prediction_labels(predictions_array, encoder, plate_length: int = 7):
 
     for idx in range(predictions_size):
         idx2 = idx * plate_length
-        chars_lst =\
-            [char for __, char in zip(
-                range(plate_length), predictions[idx2:idx2+plate_length]
-                )]
+        chars_lst = [
+            char for __, char in zip(range(plate_length), predictions[idx2 : idx2 + plate_length])
+        ]
         label = "".join(chars_lst)
         prediction_labels[idx] = label
     print(f"Predictions size: {prediction_labels.shape}")

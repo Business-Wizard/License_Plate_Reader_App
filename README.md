@@ -93,9 +93,9 @@ This diagram is for illustrative purposes, as the CNN model for this phase of th
       5. Flatten
          - (1440)
       6. Dense Neural Network
-         - 20 neurons 
+         - 20 neurons
          - relu activation
-      7. Dense Neural Network 
+      7. Dense Neural Network
          - 33 neurons
          - softmax activation
 

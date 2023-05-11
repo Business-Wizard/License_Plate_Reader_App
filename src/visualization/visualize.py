@@ -35,8 +35,7 @@ def visualize_image_process(grouped=True):
         plt.tight_layout()
         plt.show()
     else:
-        names_lst = ["Unprocessed", "Grayscale", "Threshold", "Erode", "Blur",
-                     "Contour Detection"]
+        names_lst = ["Unprocessed", "Grayscale", "Threshold", "Erode", "Blur", "Contour Detection"]
         for plot, name in zip(visuals_lst, names_lst):
             fig, ax = plt.subplots(figsize=(8, 2), dpi=200)
             ax.set_xticks([], [])
@@ -49,14 +48,13 @@ def visualize_image_process(grouped=True):
 
 
 def visualize_segmentation(image=sample_image):
-    img = pipeline_single(sample_image, dilatekernel=(3, 3),
-                          blurkernel=(5, 5), div=25, gauss=True)
+    img = pipeline_single(sample_image, dilatekernel=(3, 3), blurkernel=(5, 5), div=25, gauss=True)
     chars_lst = segment_image(img)
     fig2, ax2 = plt.subplots(nrows=1, ncols=7, figsize=(8, 2), dpi=200)
     for idx, ax in enumerate(ax2.flatten()):
         if idx == 0:
             ax.imshow(chars_lst[idx], cmap='gray')
-        elif idx > len(chars_lst)-1:
+        elif idx > len(chars_lst) - 1:
             break
         else:
             ax.set_xticks([], [])
