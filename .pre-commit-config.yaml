@@ -41,11 +41,9 @@ repos:
   - id: isort
     args: ["--profile", "black", "--filter-files"]
 - repo: https://github.com/psf/black
-  rev: 23.3.0  # https://github.com/psf/black/issues/2964#issuecomment-1080974737
+  rev: 23.3.0
   hooks:
   - id: black
-    args:
-      - "-S"
 - repo: https://github.com/pre-commit/pygrep-hooks
   rev: v1.10.0
   hooks:
