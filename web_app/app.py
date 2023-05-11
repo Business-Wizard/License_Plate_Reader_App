@@ -13,7 +13,7 @@ from src.models.predict_model import predict_single_image
 UPLOAD_FOLDER = os.getcwd() + '/web_app/static/uploads/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 SESSION_TYPE = 'filesystem'
-SESSION_FILE_DIR = os.getcwd() + "flask_session"
+SESSION_FILE_DIR = os.getcwd() + 'flask_session'
 SESSION_FILE_THRESHOLD = 5
 
 app = Flask(__name__)
@@ -68,7 +68,12 @@ def upload_image():
         preds_name = 'predicted_' + filename
         session['prediction'] = preds
         print(
-            "#######################", filename, preds_name, preds, type(filename), type(preds_name)
+            '#######################',
+            filename,
+            preds_name,
+            preds,
+            type(filename),
+            type(preds_name),
         )
         # ! os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         return redirect(url_for('display_image'))
@@ -85,13 +90,13 @@ def display_image():
     print(raw_image)
     # raw_image = SavedModel file does not exist at: models/model_full/{saved_model.pbtxt|saved_model.pb}(app.config['UPLOAD_FOLDER'], original_image)
     # return redirect(url_for('static', filename='uploads/' + raw_image), code=301)
-    return render_template("results.html", raw_image=raw_image, prediction=prediction)
+    return render_template('results.html', raw_image=raw_image, prediction=prediction)
     # ! get image displayed!!
     # return send_from_directory(app.config['UPLOAD_FOLDER'], original_image), prediction
 
 
 if __name__ == '__main__':
-    model_location = os.getcwd() + "/models/model_full"
+    model_location = os.getcwd() + '/models/model_full'
     model = load_model(model_location)
     print('Model loaded. Start serving...')
 

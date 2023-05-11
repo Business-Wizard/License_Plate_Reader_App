@@ -35,7 +35,7 @@ def visualize_image_process(grouped=True):
         plt.tight_layout()
         plt.show()
     else:
-        names_lst = ["Unprocessed", "Grayscale", "Threshold", "Erode", "Blur", "Contour Detection"]
+        names_lst = ['Unprocessed', 'Grayscale', 'Threshold', 'Erode', 'Blur', 'Contour Detection']
         for plot, name in zip(visuals_lst, names_lst):
             fig, ax = plt.subplots(figsize=(8, 2), dpi=200)
             ax.set_xticks([], [])
@@ -68,5 +68,5 @@ def visualize_segmentation(image=sample_image):
 if __name__ == '__main__':
     # visualize_image_process(grouped=False)
     # visualize_segmentation()
-    model = load_model("./models/model_full")
+    model = load_model('./models/model_full')
     visualize_history(model)

@@ -6,4 +6,5 @@ def test_required_python_version():
     py_minor: int = sys.version_info.minor
     sys.version_info
 
-    assert py_major == 3 and py_minor >= 9
+    assert py_major == 3
+    assert py_minor >= 9

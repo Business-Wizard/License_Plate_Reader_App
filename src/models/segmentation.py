@@ -3,16 +3,18 @@ import matplotlib.pyplot as plt
 
 
 def detect_contours(image):
-    print(f"Shape of image for contour detection: {image.shape}")
+    print(f'Shape of image for contour detection: {image.shape}')
     img = image.copy()
     try:
         contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     except Exception:
         contour_img, contours, hierarchy = cv2.findContours(
-            img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
+            img,
+            cv2.RETR_TREE,
+            cv2.CHAIN_APPROX_SIMPLE,
         )
     sorted_contours = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[0])
-    character_bounding_boxes = list()
+    character_bounding_boxes = []
 
     # img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
     # img = cv2.threshold(img, 0, 255, cv2.THRESH_OTSU,
@@ -58,10 +60,10 @@ def segment_image(image):
     return standardize_snips(snips_lst)
 
 
-if __name__ == "__main__":
-    filepath = "/home/joseph/Documents/10_EDUCATION/10_galvanize/"
-    "51_capstones/2_license_plates/license_plate_recognition/data/"
-    "processed/2_recognition/train_set/43ir353.png"
+if __name__ == '__main__':
+    filepath = '/home/joseph/Documents/10_EDUCATION/10_galvanize/'
+    '51_capstones/2_license_plates/license_plate_recognition/data/'
+    'processed/2_recognition/train_set/43ir353.png'
     image = cv2.imread(filepath)
     print(image.shape)
     plt.imshow(image, cmap='gray')

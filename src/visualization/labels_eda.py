@@ -1,14 +1,15 @@
 import collections
+import itertools
 from collections import Counter
 
 import pandas as pd
-import itertools
+
 from src.models.processhelpers import holdout_directory, load_labels
 
 labels_array = load_labels(holdout_directory)
 # count all characters in labels_array
 char_counter: Counter = collections.Counter(
-    itertools.chain.from_iterable(labels_array)
+    itertools.chain.from_iterable(labels_array),
 )
 counter_df = pd.DataFrame.from_dict(char_counter, orient='index')
 # counter_df = pd.DataFrame.from_dict(counter_dict, orient='index',

@@ -6,12 +6,13 @@ import numpy as np
 
 from src.data.imageprocess import pipeline_single
 
-data_directory = os.path.join(os.getcwd(), "data")
+data_directory = os.path.join(os.getcwd(), 'data')
 default_image_directory = os.path.join(
-    data_directory, "external/2_recognition/" "license_synthetic/license-plates"
+    data_directory,
+    'external/2_recognition/' 'license_synthetic/license-plates',
 )
-default_interim_directory = os.path.join(data_directory, "interim/2_recognition/")
-default_processed_directory = os.path.join(data_directory, "processed/2_recognition/")
+default_interim_directory = os.path.join(data_directory, 'interim/2_recognition/')
+default_processed_directory = os.path.join(data_directory, 'processed/2_recognition/')
 
 
 def get_image_labels(directory: str):
@@ -29,9 +30,13 @@ def process_directory(
         size = 1000000
     for image, label, __ in zip(orig_images, image_labels, range(size)):
         old_image_name = os.path.join(directory_input, image)
-        new_image_name = directory_output + label + ".png"
+        new_image_name = directory_output + label + '.png'
         processed_image = pipeline_single(
-            old_image_name, dilatekernel=(3, 3), blurkernel=(5, 5), div=15, gauss=True
+            old_image_name,
+            dilatekernel=(3, 3),
+            blurkernel=(5, 5),
+            div=15,
+            gauss=True,
         )
         cv2.imwrite(new_image_name, processed_image)
 
@@ -48,19 +53,18 @@ def holdout_split_directory(
     holdout_set = filenames[:split_idx]
     train_set = filenames[split_idx:]
 
-    print("TRAIN SET...")
+    print('TRAIN SET...')
     for filename in train_set:
         source = os.path.join(directory_input, filename)
-        destination = os.path.join(directory_output, "train_set", filename)
+        destination = os.path.join(directory_output, 'train_set', filename)
         shutil.copy(source, destination)
-    print("HOLDOUT SET...")
+    print('HOLDOUT SET...')
     for filename in holdout_set:
         source = os.path.join(directory_input, filename)
-        destination = os.path.join(directory_output, "holdout_set", filename)
+        destination = os.path.join(directory_output, 'holdout_set', filename)
         shutil.copy(source, destination)
 
-    print("DONE")
-    # label_names = [label.replace(".png", "")for label in filenames]
+    print('DONE')
     # X_train, X_holdout, y_train, y_holdout = train_test_split(images_array
     #     , label_names, test_size=0.3, random_state=101)
 
@@ -78,12 +82,8 @@ if __name__ == '__main__':
     '''split into holdout and train sets'''
     # ! uncomment to create holdout and train splits
     # holdout_split_directory(directory_input=default_interim_directory,
-    #                         directory_output=default_processed_directory,
     #                         test_size=0.3)
 
     # ! used to correct a single image
-    # old_image_name = "./data/interim/2_recognition/39n2191.png"
-    # new_image_name = "./data/processed/2_recognition/train_set/39n2191.png"
     # processed_image = pipeline_single(old_image_name, dilatekernel=(3,3),
     #                                   blurkernel=(5,5), div=25, gauss=True)
-    # cv2.imwrite(new_image_name, processed_image)

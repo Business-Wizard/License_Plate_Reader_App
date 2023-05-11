@@ -12,7 +12,7 @@ from src.models.processhelpers import load_test_data, train_directory
 
 warnings.filterwarnings('ignore')
 np.random.seed(101)  # for reproducibility
-sns.set_context("notebook")
+sns.set_context('notebook')
 
 # ! to avoid some common specific hardware/environment errors
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -22,7 +22,7 @@ if gpus:
         for gpu in gpus:
             tf.config.experimental.set_memory_growth(gpu, True)
         logical_gpus = tf.config.experimental.list_logical_devices('GPU')
-        print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+        print(len(gpus), 'Physical GPUs,', len(logical_gpus), 'Logical GPUs')
     except RuntimeError as e:
         # Memory growth must be set before GPUs have been initialized
         print(e)
@@ -44,7 +44,7 @@ def define_model(num_filters, kernel_size, input_shape, pool_size, num_classes: 
             padding='valid',
             input_shape=input_shape,
             activation='relu',
-        )
+        ),
     )  # ! 1st conv. layer
     model.add(MaxPooling2D(pool_size=pool_size))
     model.add(MaxPooling2D(pool_size=pool_size))
@@ -64,19 +64,19 @@ def define_model(num_filters, kernel_size, input_shape, pool_size, num_classes: 
     return model
 
 
-def save_model(model, destination: str = "./models/", filename: str = "model"):
-    print("SAVING MODEL")
+def save_model(model, destination: str = './models/', filename: str = 'model'):
+    print('SAVING MODEL')
     tf.keras.models.save_model(
         model,
-        os.path.join(destination, (filename + "_full")),
+        os.path.join(destination, (filename + '_full')),
         include_optimizer=True,
-        save_format="h5",
+        save_format='h5',
     )
-    model.save_weights(os.path.join(destination, (filename + "_weights")), save_format="h5")
+    model.save_weights(os.path.join(destination, (filename + '_weights')), save_format='h5')
 
 
 def visualize_history(model):
-    title_names = ["Loss", "Accuracy", "Validation Loss", "Validation Accuracy"]
+    title_names = ['Loss', 'Accuracy', 'Validation Loss', 'Validation Accuracy']
     fig, ax = plt.subplots(nrows=2, ncols=2, dpi=200, figsize=(11, 6))
     for key, name, ax in zip(model_history.history.keys(), title_names, ax.flatten()):
         ax.plot(model_history.history[key], linewidth=3)
@@ -89,7 +89,7 @@ def visualize_history(model):
 
 if __name__ == '__main__':
     X_train, X_test, y_train, y_test, encoder = load_test_data(train_directory, sample_frac=0.2)
-    print("DATA READY")
+    print('DATA READY')
 
     model = define_model(
         num_filters=40,
@@ -101,7 +101,12 @@ if __name__ == '__main__':
     print(model.summary())
 
     model_history = model.fit(
-        X_train, y_train, batch_size=20, epochs=10, verbose=1, validation_data=(X_test, y_test)
+        X_train,
+        y_train,
+        batch_size=20,
+        epochs=10,
+        verbose=1,
+        validation_data=(X_test, y_test),
     )
 
     score = model.evaluate(X_test, y_test, verbose=0)
@@ -112,7 +117,7 @@ if __name__ == '__main__':
     y_test = np.argmax(y_test, axis=-1).reshape((-1, 1))
     print(predictions[0:10])
     print(predictions.shape)
-    print("####################################################")
+    print('####################################################')
     print(y_test[0:10])
     print(y_test.shape)
     # y_test = encoder.inverse_transform(predictions)
