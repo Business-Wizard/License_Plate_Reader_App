@@ -44,7 +44,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
-select = ["E", "F", "W", "C90", "PL", "TRY", "RUF"]
+select = ["E", "F", "W", "C90", "PL", "TRY", "RUF", "ERA", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PT", "PTH", "PYI", "RET", "RSE", "SIM", "SLF", "TCH", "TID", "UP", "YTT", "ANN", "S", "Q", "T", "D", "N", "A", "B", "C", "C4", "G", "I"]
 ignore = ["E501"]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
