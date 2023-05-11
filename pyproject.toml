@@ -80,3 +80,5 @@ max-complexity = 7
 
 [tool.ruff.flake8-quotes]
 docstring-quotes = "single"
+inline-quotes = "single"
+multiline-quotes = "single"
