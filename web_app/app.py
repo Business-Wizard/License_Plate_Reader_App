@@ -12,7 +12,7 @@ from tensorflow.keras.models import load_model
 
 
 UPLOAD_FOLDER = os.getcwd() + '/web_app/static/uploads/'
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 SESSION_TYPE = 'filesystem'
 SESSION_FILE_DIR = os.getcwd() + "flask_session"
 SESSION_FILE_THRESHOLD = 5

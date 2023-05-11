@@ -1,4 +1,3 @@
-
 # TODO parse xml
 # TODO load into array
 
