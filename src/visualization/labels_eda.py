@@ -1,6 +1,7 @@
 import collections
 import itertools
 from collections import Counter
+import logging
 
 import pandas as pd
 
@@ -14,9 +15,9 @@ char_counter: Counter = collections.Counter(
 counter_df = pd.DataFrame.from_dict(char_counter, orient='index')
 # counter_df = pd.DataFrame.from_dict(counter_dict, orient='index',
 #                                     columns=counter_dict.keys)
-# print(counter_df)
+# logging.info(counter_df)
 df_display = counter_df.iloc[:, 0].sort_values(axis=0, ascending=False)
-print(df_display)
+logging.info(df_display)
 # sns.displot(df_display)
 # plt.show()
 # ! dataset lacks letters of Q, W, X

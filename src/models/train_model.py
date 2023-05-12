@@ -1,3 +1,4 @@
+import logging
 import os
 import warnings
 
@@ -5,8 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import tensorflow as tf
-from tensorflow.keras.layers import Conv2D, Dense, Flatten, MaxPooling2D
-from tensorflow.keras.models import Sequential
+from keras.layers import Conv2D, Dense, Flatten, MaxPooling2D
+from keras.models import Model, Sequential
 
 from src.models.processhelpers import load_test_data, train_directory
 
@@ -22,7 +23,7 @@ if gpus:
         for gpu in gpus:
             tf.config.experimental.set_memory_growth(gpu, True)
         logical_gpus = tf.config.experimental.list_logical_devices('GPU')
-        print(len(gpus), 'Physical GPUs,', len(logical_gpus), 'Logical GPUs')
+        logging.info(len(gpus), 'Physical GPUs,', len(logical_gpus), 'Logical GPUs')
     except RuntimeError as e:
         # Memory growth must be set before GPUs have been initialized
         print(e)
@@ -51,7 +52,7 @@ def define_model(num_filters, kernel_size, input_shape, pool_size, num_classes: 
 
     model.add(Flatten())
     # ! necessary to flatten before going into conventional dense layer
-    print('Model flattened out to ', model.output_shape)
+    logging.info('Model flattened out to ', model.output_shape)
 
     model.add(Dense(20, activation='relu'))
     model.add(Dense(num_classes, activation='softmax'))
@@ -65,7 +66,7 @@ def define_model(num_filters, kernel_size, input_shape, pool_size, num_classes: 
 
 
 def save_model(model, destination: str = './models/', filename: str = 'model'):
-    print('SAVING MODEL')
+    logging.info('SAVING MODEL')
     tf.keras.models.save_model(
         model,
         os.path.join(destination, (filename + '_full')),
@@ -75,10 +76,10 @@ def save_model(model, destination: str = './models/', filename: str = 'model'):
     model.save_weights(os.path.join(destination, (filename + '_weights')), save_format='h5')
 
 
-def visualize_history(model):
+def visualize_history(_model: Model):
     title_names = ['Loss', 'Accuracy', 'Validation Loss', 'Validation Accuracy']
-    fig, ax = plt.subplots(nrows=2, ncols=2, dpi=200, figsize=(11, 6))
-    for key, name, ax in zip(model_history.history.keys(), title_names, ax.flatten()):
+    _fig, ax = plt.subplots(nrows=2, ncols=2, dpi=200, figsize=(11, 6))
+    for key, name, ax in zip(model_history.history.keys(), title_names, ax.flatten(), strict=False):
         ax.plot(model_history.history[key], linewidth=3)
         ax.set_title(name)
         ax.set_xlabel('epoch')
@@ -89,7 +90,7 @@ def visualize_history(model):
 
 if __name__ == '__main__':
     X_train, X_test, y_train, y_test, encoder = load_test_data(train_directory, sample_frac=0.2)
-    print('DATA READY')
+    logging.info('DATA READY')
 
     model = define_model(
         num_filters=40,
@@ -98,7 +99,7 @@ if __name__ == '__main__':
         pool_size=(2, 2),
         num_classes=33,
     )
-    print(model.summary())
+    logging.info(model.summary())
 
     model_history = model.fit(
         X_train,
@@ -115,19 +116,19 @@ if __name__ == '__main__':
     predictions_array = model.predict(X_test)
     predictions = np.argmax(predictions_array, axis=-1).reshape((-1, 1))
     y_test = np.argmax(y_test, axis=-1).reshape((-1, 1))
-    print(predictions[0:10])
-    print(predictions.shape)
-    print('####################################################')
-    print(y_test[0:10])
-    print(y_test.shape)
+    logging.info(predictions[0:10])
+    logging.info(predictions.shape)
+    logging.info('####################################################')
+    logging.info(y_test[0:10])
+    logging.info(y_test.shape)
     # y_test = encoder.inverse_transform(predictions)
-    # print(y_test[0:10])
-    # print(y_test.shape)
+    # logging.info(y_test[0:10])
+    # logging.info(y_test.shape)
 
-    # print(classification_report(y_test, predictions))
-    print(f'Test score: {score[0]}')
-    print(f'Test accuracy: {score[1]}')  # this is the one we care about
+    # logging.info(classification_report(y_test, predictions))
+    logging.info(f'Test score: {score[0]}')
+    logging.info(f'Test accuracy: {score[1]}')  # this is the one we care about
 
     visualize_history(model)
     # save_model(model)
-    # print(encoder.inverse_transform(predictions_array)[0:20])
+    # logging.info(encoder.inverse_transform(predictions_array)[0:20])

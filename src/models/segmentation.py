@@ -1,13 +1,17 @@
+import logging
+
 import cv2
 import matplotlib.pyplot as plt
 
 
 def detect_contours(image):
-    print(f'Shape of image for contour detection: {image.shape}')
+    logging.info('Detecting contours')
+    logging.info(f'Shape of image for contour detection: {image.shape}')
     img = image.copy()
     try:
         contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     except Exception:
+        logging.warning('provided image ')
         contour_img, contours, hierarchy = cv2.findContours(
             img,
             cv2.RETR_TREE,
@@ -54,7 +58,7 @@ if __name__ == '__main__':
     '51_capstones/2_license_plates/license_plate_recognition/data/'
     'processed/2_recognition/train_set/43ir353.png'
     image = cv2.imread(filepath)
-    print(image.shape)
+    logging.info(image.shape)
     plt.imshow(image, cmap='gray')
     plt.show()
 
@@ -63,6 +67,6 @@ if __name__ == '__main__':
     for idx, ax in enumerate(ax2.flatten()):
         if idx > len(chars_lst) - 1:
             break
-        print(chars_lst[idx].shape)
+        logging.info(chars_lst[idx].shape)
         ax.imshow(chars_lst[idx], cmap='gray')
     plt.show()

@@ -1,19 +1,26 @@
-import os
+import logging
+import pathlib
 import secrets
+from pathlib import Path
+from typing import Final
 
+import numpy as np
 from flask import Flask, flash, redirect, render_template, request, session, url_for
-from tensorflow.keras.models import load_model
+from keras import models
+from keras.models import Model
 
 # import flask_session
 from werkzeug.utils import secure_filename
+from werkzeug.wrappers import Response
 
 from src.data.imageprocess import pipeline_single
 from src.models.predict_model import predict_single_image
 
-UPLOAD_FOLDER = os.getcwd() + '/web_app/static/uploads/'
+APP_ROOT_DIR: Final[Path] = pathlib.Path().cwd()
+UPLOAD_FOLDER: Final[Path] = APP_ROOT_DIR / 'web_app/static/uploads/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 SESSION_TYPE = 'filesystem'
-SESSION_FILE_DIR = os.getcwd() + 'flask_session'
+SESSION_FILE_DIR: Final[Path] = APP_ROOT_DIR / 'flask_session'
 SESSION_FILE_THRESHOLD = 5
 
 app = Flask(__name__)
@@ -24,50 +31,47 @@ app.secret_key = secret
 # flask_session.Session(app)
 
 
-def allowed_file(filename):
-    has_extension = '.' in filename
-    extension_allowed = filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+def is_supported_file_type(filename) -> bool:
+    has_extension: bool = '.' in filename
+    extension_allowed: bool = filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
     return has_extension and extension_allowed
 
 
-def predict_license_plate(model, img_path):
-    print(type(img_path))
-    print(img_path)
-    image = pipeline_single(img_path)  # blurred image
-    # image = load_single_image(image)
-    prediction = predict_single_image(image, model)
-    return prediction
+def predict_license_plate(model, img_path: Path) -> np.ndarray:
+    logging.info(img_path)
+    image = pipeline_single(filepath=img_path)
+    return predict_single_image(image, model)
 
 
 # home page
 @app.route('/')
-def upload_form():
+def upload_form() -> str:
     return render_template('upload.html')
 
 
 @app.route('/', methods=['POST'])
-def upload_image():
+def upload_image() -> Response:
     if 'file' not in request.files:
         flash('No file part')
         return redirect(request.url)
 
     file = request.files['file']
-    if file.filename == '':
+    if not file.filename:
         flash('No image selected for uploading')
         return redirect(request.url)
 
-    if file and allowed_file(file.filename):
+    if file and is_supported_file_type(file.filename):
         filename = secure_filename(file.filename)
-        print(f'upload_image filename: {filename}')
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        logging.info(f'upload_image filename: {filename}')
+        file.save(app.config['UPLOAD_FOLDER'] / filename)
         session['raw_image'] = filename
 
-        preds = predict_license_plate(model, os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        preds: np.ndarray = predict_license_plate(model, app.config['UPLOAD_FOLDER'] / filename)
         preds = str(preds[0]) if len(preds) == 1 else preds
-        print(type(preds), preds)
+        logging.info(type(preds), preds)
         preds_name = 'predicted_' + filename
         session['prediction'] = preds
-        print(
+        logging.info(
             '#######################',
             filename,
             preds_name,
@@ -84,10 +88,10 @@ def upload_image():
 
 
 @app.route('/display/')
-def display_image():
+def display_image() -> str:
     prediction = session.get('prediction')
     raw_image = session['raw_image']
-    print(raw_image)
+    logging.info(raw_image)
     # raw_image = SavedModel file does not exist at: models/model_full/{saved_model.pbtxt|saved_model.pb}(app.config['UPLOAD_FOLDER'], original_image)
     # return redirect(url_for('static', filename='uploads/' + raw_image), code=301)
     return render_template('results.html', raw_image=raw_image, prediction=prediction)
@@ -96,9 +100,9 @@ def display_image():
 
 
 if __name__ == '__main__':
-    model_location = os.getcwd() + '/models/model_full'
-    model = load_model(model_location)
-    print('Model loaded. Start serving...')
+    model_location = APP_ROOT_DIR / 'models/model_full'
+    model: Model = models.load_model(model_location)
+    logging.info('Model loaded. Start serving...')
 
     # http_server = WSGIServer(('0.0.0.0', 31000), app)
     # http_server.serve_forever()

@@ -1,23 +1,16 @@
+import logging
+import pathlib
+from pathlib import Path
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-raw_images_folder = './data/raw/'
-sample_image = './data/raw/17-SAC-73.png'
+RAW_IMAGES_DIR: Path = pathlib.Path().cwd() / 'data/raw/'
+SAMPLE_IMAGE: Path = RAW_IMAGES_DIR / '17-SAC-73.png'
 
 
-def read_image(filename: str) -> np.ndarray:
-    '''Reads a specified image and converts to GBR color scheme used by OpenCV.
-
-    Args:
-    ----
-        filename (str): Name of an individual unprocessed image.
-
-    Returns:
-    -------
-        [np.ndarray]: Array of the image data of shape
-                      (height, width, channels)
-    '''
+def read_image(filename: Path) -> np.ndarray:
     try:
         img = cv2.cvtColor(cv2.imread(filename), cv2.COLOR_RGB2BGR)
     except Exception:
@@ -26,17 +19,6 @@ def read_image(filename: str) -> np.ndarray:
 
 
 def grayscale(image: np.ndarray) -> np.ndarray:
-    '''Converts image to a single grayscale channel.
-
-    Args:
-    ----
-        image (np.ndarray): Image in an RGB or BGR color scheme.
-
-    Returns:
-    -------
-        [np.ndarray]: Image in a single grayscale channel.
-                      Expected shape: (height, width, 1)
-    '''
     try:
         return cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
     except Exception:
@@ -44,22 +26,17 @@ def grayscale(image: np.ndarray) -> np.ndarray:
 
 
 def threshold_image(image: np.ndarray) -> np.ndarray:
-    '''Applies a threshold to the supplied image.
-
-    Args:
-    ----
-        image (np.ndarray): Expecting a grayscaled image,
-                            but can be used more generally.
-
-    Returns:
-    -------
-        [np.ndarray]: An image array where all values are either 0 or 255
-    '''
-    threshold_image = cv2.threshold(image, 0, 255, cv2.THRESH_OTSU, cv2.THRESH_BINARY_INV)[1]
+    threshold_image: np.ndarray = cv2.threshold(
+        src=image,
+        thresh=0,
+        maxval=255,
+        type=cv2.THRESH_OTSU,
+        dst=cv2.THRESH_BINARY_INV,
+    )[1]
     return cv2.bitwise_not(threshold_image)
 
 
-def display_hist(image, channel: int = 0):
+def display_hist(image: np.ndarray, _channel: int = 0) -> None:
     hist_values = cv2.calcHist([image], channels=[0], mask=None, histSize=[256], ranges=[0, 256])
     plt.plot(hist_values)
 
@@ -92,13 +69,13 @@ def dilate_image(image, ksize: tuple = (5, 5), iters: int = 1, erode=True):
 
 
 def pipeline_single(
-    filename: str,
+    filepath: Path,
     dilatekernel: tuple = (3, 3),
     blurkernel: tuple = (5, 5),
     div: int = 25,
     gauss: bool = True,
 ):
-    img = read_image(filename)
+    img = read_image(filepath)
     grayscaled = grayscale(img)
     threshed = threshold_image(grayscaled)
     dilated = dilate_image(threshed, dilatekernel)
@@ -108,7 +85,7 @@ def pipeline_single(
 
 def save_image(filename, image):
     img = np.array(image)
-    print(img.shape)
+    logging.info(img.shape)
     cv2.imwrite(filename, img)
 
 

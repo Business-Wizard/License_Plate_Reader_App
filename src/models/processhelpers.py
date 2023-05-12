@@ -1,3 +1,4 @@
+import logging
 import os
 import warnings
 
@@ -65,8 +66,8 @@ def load_images(source: str = train_directory, sample_frac: float = 0.01):
     dataset_size = int(len(filepath_list) * sample_frac)
     dataset_size = dataset_size if dataset_size >= 1 else 1
     images_array = np.empty((dataset_size * 7, 30, 30), dtype=np.float32)
-    print(f'Source Images Shape: {images_array.shape}')
-    print('LOADING IMAGES ARRAY...')
+    logging.info(f'Source Images Shape: {images_array.shape}')
+    logging.info('LOADING IMAGES ARRAY...')
 
     for idx, filepath in zip(range(0, dataset_size * 7, 7), filepath_list):
         segments = segmentation.segment_image(cv2.imread(filepath, 0))
@@ -80,14 +81,14 @@ def load_images(source: str = train_directory, sample_frac: float = 0.01):
             images_array[idx + 6],
         ) = segments
 
-    print('DONE LOADING IMAGES')
+    logging.info('DONE LOADING IMAGES')
     return images_array
 
 
 def load_single_image(source):
     images_array = np.empty((7, 30, 30), dtype=np.float32)
-    print(f'Source Images Shape: {images_array.shape}')
-    print('LOADING IMAGES ARRAY...')
+    logging.info(f'Source Images Shape: {images_array.shape}')
+    logging.info('LOADING IMAGES ARRAY...')
     segments = segmentation.segment_image(source)
     (
         images_array[0],
@@ -98,7 +99,7 @@ def load_single_image(source):
         images_array[5],
         images_array[6],
     ) = segments
-    print('DONE LOADING IMAGES')
+    logging.info('DONE LOADING IMAGES')
     return images_array
 
 
@@ -112,12 +113,12 @@ def load_labels(source: str = train_directory, sample_frac: float = 0.01):
     labels_array = np.empty((dataset_size, plate_number_length), dtype='U10')
 
     labels_array = np.empty((dataset_size * 7, 1), dtype='U10')
-    print('LOADING LABELS ARRAY...')
+    logging.info('LOADING LABELS ARRAY...')
     for idx1, label in zip(range(0, dataset_size * 7, 7), labels_list):
         for iter, char in enumerate(label):
             labels_array[idx1 + iter] = char
 
-    print('DONE LOADING LABELS')
+    logging.info('DONE LOADING LABELS')
     return labels_array
 
 
@@ -132,7 +133,7 @@ def standardize_data(X, image_shape: tuple = (30, 30)):
 def categorical_encoding(y):
     encoder = OneHotEncoder(handle_unknown='error', sparse=False)
     encoder.fit(y)
-    print(f'Categories: {encoder.categories_}')
+    logging.info(f'Categories: {encoder.categories_}')
     labels_array = encoder.transform(y)
     return encoder, labels_array
 
@@ -158,10 +159,10 @@ def load_test_data(
 
     else:
         X_train, X_test, y_train, y_test = split_data(X, y)
-        print('X_train shape:', X_train.shape)
-        print('y_train shape:', y_train.shape)
-        print(X_train.shape[0], 'train samples')
-        print(X_test.shape[0], 'test samples')
+        logging.info('X_train shape:', X_train.shape)
+        logging.info('y_train shape:', y_train.shape)
+        logging.info(X_train.shape[0], 'train samples')
+        logging.info(X_test.shape[0], 'test samples')
 
         return X_train, X_test, y_train, y_test, encoder
 
@@ -184,6 +185,6 @@ def zip_prediction_labels(predictions_array, encoder, plate_length: int = 7):
         ]
         label = ''.join(chars_lst)
         prediction_labels[idx] = label
-    print(f'Predictions size: {prediction_labels.shape}')
+    logging.info(f'Predictions size: {prediction_labels.shape}')
 
     return prediction_labels

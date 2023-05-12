@@ -1,21 +1,22 @@
 import matplotlib.pyplot as plt
-from tensorflow.keras.models import load_model
+import numpy as np
+from keras import models
 
 from src.data.imageprocess import (
+    SAMPLE_IMAGE,
     blur_image,
     dilate_image,
     grayscale,
     pipeline_single,
     read_image,
-    sample_image,
     threshold_image,
 )
 from src.models.segmentation import detect_contours, segment_image
 from src.models.train_model import visualize_history
 
 
-def visualize_image_process(grouped=True):
-    img = read_image(sample_image)
+def visualize_image_process(grouped: bool = True):
+    img: np.ndarray = read_image(SAMPLE_IMAGE)
     grayed = grayscale(img)
     threshed = threshold_image(grayed)
     dilated = dilate_image(threshed, ksize=(5, 5), iters=1)
@@ -36,7 +37,7 @@ def visualize_image_process(grouped=True):
         plt.show()
     else:
         names_lst = ['Unprocessed', 'Grayscale', 'Threshold', 'Erode', 'Blur', 'Contour Detection']
-        for plot, name in zip(visuals_lst, names_lst):
+        for plot, name in zip(visuals_lst, names_lst, strict=False):
             fig, ax = plt.subplots(figsize=(8, 2), dpi=200)
             ax.set_xticks([], [])
             ax.set_yticks([], [])
@@ -47,8 +48,8 @@ def visualize_image_process(grouped=True):
             # plt.savefig("./images/" + name + ".png")
 
 
-def visualize_segmentation(image=sample_image):
-    img = pipeline_single(sample_image, dilatekernel=(3, 3), blurkernel=(5, 5), div=25, gauss=True)
+def visualize_segmentation(image=SAMPLE_IMAGE):
+    img = pipeline_single(SAMPLE_IMAGE, dilatekernel=(3, 3), blurkernel=(5, 5), div=25, gauss=True)
     chars_lst = segment_image(img)
     fig2, ax2 = plt.subplots(nrows=1, ncols=7, figsize=(8, 2), dpi=200)
     for idx, ax in enumerate(ax2.flatten()):
@@ -68,5 +69,5 @@ def visualize_segmentation(image=sample_image):
 if __name__ == '__main__':
     # visualize_image_process(grouped=False)
     # visualize_segmentation()
-    model = load_model('./models/model_full')
+    model = models.load_model('./models/model_full')
     visualize_history(model)
