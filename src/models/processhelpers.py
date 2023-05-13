@@ -1,6 +1,13 @@
 import logging
 import os
+import pathlib
 import warnings
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+    from pathlib import Path
+    from typing import Final
 
 import cv2
 import numpy as np
@@ -12,11 +19,11 @@ from src.models import segmentation
 warnings.filterwarnings('ignore')
 np.random.seed(101)  # for reproducibility
 
-data_directory = os.path.join(os.getcwd(), 'data')
-processed_directory = os.path.join(data_directory, 'processed/2_recognition')
-holdout_directory = os.path.join(processed_directory, 'holdout_set')
-train_directory = os.path.join(processed_directory, 'train_set')
-prediction_directory = os.path.join(data_directory, 'processed/3_prediction/')
+DATA_DIR: Final[Path] = pathlib.Path().cwd() / 'data'
+PROCESSED_DIR: Final[Path] = DATA_DIR / 'processed/2_recognition'
+HOLDOUT_DIR: Final[Path] = PROCESSED_DIR / 'holdout_set'
+TRAIN_DIR: Final[Path] = PROCESSED_DIR / 'train_set'
+PREDICTION_DIR: Final[Path] = DATA_DIR / 'processed/3_prediction/'
 
 encoder = OneHotEncoder(handle_unknown='error', sparse=False)
 categories_array = np.array(
@@ -60,8 +67,8 @@ categories_array = np.array(
 encoder.fit(categories_array)
 
 
-def load_images(source: str = train_directory, sample_frac: float = 0.01):
-    filename_list = os.listdir(source)
+def load_images(source: Path = TRAIN_DIR, sample_frac: float = 0.01):
+    filename_list: Iterable[Path] = source.iterdir()
     filepath_list = [os.path.join(source, file) for file in filename_list]
     dataset_size = int(len(filepath_list) * sample_frac)
     dataset_size = dataset_size if dataset_size >= 1 else 1
@@ -103,7 +110,7 @@ def load_single_image(source):
     return images_array
 
 
-def load_labels(source: str = train_directory, sample_frac: float = 0.01):
+def load_labels(source: str = TRAIN_DIR, sample_frac: float = 0.01):
     filename_list = os.listdir(source)
 
     labels_list = [file[-11:-4].lower().replace('-', '') for file in filename_list]
@@ -114,7 +121,7 @@ def load_labels(source: str = train_directory, sample_frac: float = 0.01):
 
     labels_array = np.empty((dataset_size * 7, 1), dtype='U10')
     logging.info('LOADING LABELS ARRAY...')
-    for idx1, label in zip(range(0, dataset_size * 7, 7), labels_list):
+    for idx1, label in zip(range(0, dataset_size * 7, 7), labels_list, strict=True):
         for iter, char in enumerate(label):
             labels_array[idx1 + iter] = char
 
@@ -138,13 +145,13 @@ def categorical_encoding(y):
     return encoder, labels_array
 
 
-def split_data(X, y):
-    X_train, X_test, y_train, y_test = train_test_split(X, y)
-    return X_train, X_test, y_train, y_test
+def split_data(x, y):
+    x_train, x_test, y_train, y_test = train_test_split(x, y)
+    return x_train, x_test, y_train, y_test
 
 
 def load_test_data(
-    source: str = train_directory,
+    source: str = TRAIN_DIR,
     sample_frac: float = 0.01,
     validate: bool = False,
 ):
@@ -167,14 +174,14 @@ def load_test_data(
         return X_train, X_test, y_train, y_test, encoder
 
 
-def load_unseen_data(source: str = prediction_directory, sample_frac: float = 1.0):
+def load_unseen_data(source: str = PREDICTION_DIR, sample_frac: float = 1.0):
     images_array = load_images(source, sample_frac)
     X = standardize_data(images_array, image_shape=(30, 30))
     return X
 
 
-def zip_prediction_labels(predictions_array, encoder, plate_length: int = 7):
-    predictions_size = len(predictions_array) // plate_length
+def zip_prediction_labels(predictions_array: np.ndarray, encoder, plate_length: int = 7):
+    predictions_size: int = len(predictions_array) // plate_length
     prediction_labels = np.empty((predictions_size), dtype='U10')
     predictions = encoder.inverse_transform(predictions_array).flatten()
 
@@ -183,7 +190,7 @@ def zip_prediction_labels(predictions_array, encoder, plate_length: int = 7):
         chars_lst = [
             char for __, char in zip(range(plate_length), predictions[idx2 : idx2 + plate_length])
         ]
-        label = ''.join(chars_lst)
+        label: str = ''.join(chars_lst)
         prediction_labels[idx] = label
     logging.info(f'Predictions size: {prediction_labels.shape}')
 

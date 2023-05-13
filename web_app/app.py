@@ -69,15 +69,13 @@ def upload_image() -> Response:
         preds: np.ndarray = predict_license_plate(model, app.config['UPLOAD_FOLDER'] / filename)
         preds = str(preds[0]) if len(preds) == 1 else preds
         logging.info(type(preds), preds)
-        preds_name = 'predicted_' + filename
+        preds_name: str = f'predicted_{filename}'
         session['prediction'] = preds
         logging.info(
             '#######################',
             filename,
             preds_name,
             preds,
-            type(filename),
-            type(preds_name),
         )
         # ! os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         return redirect(url_for('display_image'))
@@ -107,4 +105,4 @@ if __name__ == '__main__':
     # http_server = WSGIServer(('0.0.0.0', 31000), app)
     # http_server.serve_forever()
 
-    app.run(host='0.0.0.0', port=31000, threaded=True, debug=False)
+    app.run(host='0.0.0.0', port=31000, threaded=True, debug=False)  # noqa: S104

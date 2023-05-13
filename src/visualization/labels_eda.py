@@ -1,13 +1,13 @@
 import collections
 import itertools
-from collections import Counter
 import logging
+from collections import Counter
 
 import pandas as pd
 
-from src.models.processhelpers import holdout_directory, load_labels
+from src.models.processhelpers import HOLDOUT_DIR, load_labels
 
-labels_array = load_labels(holdout_directory)
+labels_array = load_labels(HOLDOUT_DIR)
 # count all characters in labels_array
 char_counter: Counter = collections.Counter(
     itertools.chain.from_iterable(labels_array),

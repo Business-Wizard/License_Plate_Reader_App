@@ -1,19 +1,23 @@
 import logging
-import os
 import warnings
+from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import tensorflow as tf
-from keras.layers import Conv2D, Dense, Flatten, MaxPooling2D
-from keras.models import Model, Sequential
+from keras import layers, models
 
-from src.models.processhelpers import load_test_data, train_directory
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from keras.models import Model
+
+from src.models.processhelpers import TRAIN_DIR, load_test_data
 
 warnings.filterwarnings('ignore')
-np.random.seed(101)  # for reproducibility
-sns.set_context('notebook')
+np.random.seed(101)  # set seed for reproducibility
+sns.set_context('notebook')  # pyright: ignore [reportUnknownMemberType]
 
 # ! to avoid some common specific hardware/environment errors
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -26,7 +30,7 @@ if gpus:
         logging.info(len(gpus), 'Physical GPUs,', len(logical_gpus), 'Logical GPUs')
     except RuntimeError as e:
         # Memory growth must be set before GPUs have been initialized
-        print(e)
+        logging.error(e)
 
 # data_directory = os.path.join(os.getcwd(), "data")
 # processed_directory = os.path.join(data_directory, "processed/2_recognition")
@@ -35,11 +39,11 @@ if gpus:
 
 
 def define_model(num_filters, kernel_size, input_shape, pool_size, num_classes: int = 33):
-    model = Sequential()  # model is a linear stack of layers (don't change)
+    model = models.Sequential()  # model is a linear stack of layers (don't change)
     # note: convolutional and dense layers require an activation function
     # options: 'linear', 'sigmoid', 'tanh', 'relu', 'softplus', 'softsign'
     model.add(
-        Conv2D(
+        layers.Conv2D(
             num_filters,
             (kernel_size[0], kernel_size[1]),
             padding='valid',
@@ -47,15 +51,15 @@ def define_model(num_filters, kernel_size, input_shape, pool_size, num_classes: 
             activation='relu',
         ),
     )  # ! 1st conv. layer
-    model.add(MaxPooling2D(pool_size=pool_size))
-    model.add(MaxPooling2D(pool_size=pool_size))
+    model.add(layers.MaxPooling2D(pool_size=pool_size))
+    model.add(layers.MaxPooling2D(pool_size=pool_size))
 
-    model.add(Flatten())
+    model.add(layers.Flatten())
     # ! necessary to flatten before going into conventional dense layer
     logging.info('Model flattened out to ', model.output_shape)
 
-    model.add(Dense(20, activation='relu'))
-    model.add(Dense(num_classes, activation='softmax'))
+    model.add(layers.Dense(20, activation='relu'))
+    model.add(layers.Dense(num_classes, activation='softmax'))
 
     # see https://keras.io/optimizers/#usage-of-optimizers
     # * KEEP loss at 'categorical_crossentropy' for this multiclass problem,
@@ -65,15 +69,15 @@ def define_model(num_filters, kernel_size, input_shape, pool_size, num_classes: 
     return model
 
 
-def save_model(model, destination: str = './models/', filename: str = 'model'):
+def save_model(model, destination: Path = './models/', filename: str = 'model'):
     logging.info('SAVING MODEL')
     tf.keras.models.save_model(
         model,
-        os.path.join(destination, (filename + '_full')),
+        destination / f'{filename}_full',
         include_optimizer=True,
         save_format='h5',
     )
-    model.save_weights(os.path.join(destination, (filename + '_weights')), save_format='h5')
+    model.save_weights(destination / f'{filename}_weights', save_format='h5')
 
 
 def visualize_history(_model: Model):
@@ -89,7 +93,7 @@ def visualize_history(_model: Model):
 
 
 if __name__ == '__main__':
-    X_train, X_test, y_train, y_test, encoder = load_test_data(train_directory, sample_frac=0.2)
+    X_train, X_test, y_train, y_test, encoder = load_test_data(TRAIN_DIR, sample_frac=0.2)
     logging.info('DATA READY')
 
     model = define_model(

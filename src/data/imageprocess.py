@@ -13,7 +13,7 @@ SAMPLE_IMAGE: Path = RAW_IMAGES_DIR / '17-SAC-73.png'
 def read_image(filename: Path) -> np.ndarray:
     try:
         img = cv2.cvtColor(cv2.imread(filename), cv2.COLOR_RGB2BGR)
-    except Exception:
+    except Exception:  # noqa: BLE001
         img = cv2.imread(filename)
     return img
 
@@ -21,7 +21,7 @@ def read_image(filename: Path) -> np.ndarray:
 def grayscale(image: np.ndarray) -> np.ndarray:
     try:
         return cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-    except Exception:
+    except Exception:  # noqa: BLE001
         return image
 
 
@@ -41,25 +41,22 @@ def display_hist(image: np.ndarray, _channel: int = 0) -> None:
     plt.plot(hist_values)
 
 
-def blur_image(image: np.ndarray, ksize: tuple, div: int, gauss: bool):
+def blur_image(image: np.ndarray, ksize: tuple[int, ...], *, div: int, gauss: bool) -> np.ndarray:
     # ! div=1 removes State section! (unintended feature)
     if gauss:
         kernel = np.ones(shape=ksize, dtype=np.float32) / div
-        gauss_blurred = cv2.filter2D(image, -1, kernel)
-        return gauss_blurred
-    else:
-        median_blurred = cv2.medianBlur(image, ksize[0])
-        return median_blurred
+        return cv2.filter2D(image, -1, kernel)
+    return cv2.medianBlur(image, ksize[0])
 
 
-def detect_edges(image):
+def detect_edges(image: np.ndarray):
     med_val = np.median(image)
     lower = int(max(0, 0.07 * med_val))
     upper = int(min(255, 1.3 * med_val))
     return cv2.Canny(image=image, threshold1=lower, threshold2=upper + 100)
 
 
-def dilate_image(image, ksize: tuple = (5, 5), iters: int = 1, erode=True):
+def dilate_image(image, ksize: tuple = (5, 5), iters: int = 1, *, erode: bool = True) -> np.ndarray:
     kernel_dilation = np.ones(ksize, dtype=np.uint8)
     if erode:
         dilated = cv2.erode(image, kernel_dilation, iterations=iters)
@@ -73,14 +70,14 @@ def pipeline_single(
     dilatekernel: tuple = (3, 3),
     blurkernel: tuple = (5, 5),
     div: int = 25,
+    *,
     gauss: bool = True,
 ):
     img = read_image(filepath)
     grayscaled = grayscale(img)
     threshed = threshold_image(grayscaled)
     dilated = dilate_image(threshed, dilatekernel)
-    blurred = blur_image(dilated, blurkernel, div, gauss)
-    return blurred
+    return blur_image(image=dilated, ksize=blurkernel, div, gauss)
 
 
 def save_image(filename, image):

@@ -1,28 +1,26 @@
+from typing import TYPE_CHECKING
+
 import matplotlib.pyplot as plt
-import numpy as np
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    import numpy as np
 from keras import models
 
-from src.data.imageprocess import (
-    SAMPLE_IMAGE,
-    blur_image,
-    dilate_image,
-    grayscale,
-    pipeline_single,
-    read_image,
-    threshold_image,
-)
+from src.data import imageprocess
 from src.models.segmentation import detect_contours, segment_image
 from src.models.train_model import visualize_history
 
 
-def visualize_image_process(grouped: bool = True):
-    img: np.ndarray = read_image(SAMPLE_IMAGE)
-    grayed = grayscale(img)
-    threshed = threshold_image(grayed)
-    dilated = dilate_image(threshed, ksize=(5, 5), iters=1)
-    blurred = blur_image(dilated, ksize=(3, 3), div=15, gauss=True)
-    segmented = detect_contours(blurred)[0]
-    visuals_lst = [img, grayed, threshed, dilated, blurred, segmented]
+def visualize_image_process(*, grouped: bool = True):
+    img: np.ndarray = imageprocess.read_image(imageprocess.SAMPLE_IMAGE)
+    grayed: np.ndarray = imageprocess.grayscale(img)
+    threshed: np.ndarray = imageprocess.threshold_image(grayed)
+    dilated: np.ndarray = imageprocess.dilate_image(threshed, ksize=(5, 5), iters=1)
+    blurred: np.ndarray = imageprocess.blur_image(dilated, ksize=(3, 3), div=15, gauss=True)
+    segmented: np.ndarray = detect_contours(blurred)[0]
+    visuals_lst: Iterable[np.ndarray] = [img, grayed, threshed, dilated, blurred, segmented]
 
     if grouped:
         fig, ax = plt.subplots(nrows=3, ncols=2, figsize=(11, 6), dpi=200)
@@ -48,8 +46,10 @@ def visualize_image_process(grouped: bool = True):
             # plt.savefig("./images/" + name + ".png")
 
 
-def visualize_segmentation(image=SAMPLE_IMAGE):
-    img = pipeline_single(SAMPLE_IMAGE, dilatekernel=(3, 3), blurkernel=(5, 5), div=25, gauss=True)
+def visualize_segmentation(image: np.ndarray = imageprocess.SAMPLE_IMAGE):
+    img = imageprocess.pipeline_single(
+        imageprocess.SAMPLE_IMAGE, dilatekernel=(3, 3), blurkernel=(5, 5), div=25, gauss=True
+    )
     chars_lst = segment_image(img)
     fig2, ax2 = plt.subplots(nrows=1, ncols=7, figsize=(8, 2), dpi=200)
     for idx, ax in enumerate(ax2.flatten()):
