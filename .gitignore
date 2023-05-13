@@ -11,6 +11,7 @@ references/
 /docs/
 /web_app/credentials/
 /static/uploads/*
+*.pyi
 
 
 # Byte-compiled / optimized / DLL files
