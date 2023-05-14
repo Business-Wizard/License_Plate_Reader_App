@@ -9,6 +9,8 @@ if TYPE_CHECKING:
     from pathlib import Path
     from typing import Final
 
+import string
+
 import cv2
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -26,42 +28,12 @@ TRAIN_DIR: Final[Path] = PROCESSED_DIR / 'train_set'
 PREDICTION_DIR: Final[Path] = DATA_DIR / 'processed/3_prediction/'
 
 encoder = OneHotEncoder(handle_unknown='error', sparse=False)
+license_plate_letters: Final[str] = (
+    string.ascii_lowercase.replace('o', '').replace('q', '').replace('z', '')
+)
+license_plate_characters: Final[str] = string.digits + license_plate_letters
 categories_array = np.array(
-    [
-        '0',
-        '1',
-        '2',
-        '3',
-        '4',
-        '5',
-        '6',
-        '7',
-        '8',
-        '9',
-        'a',
-        'b',
-        'c',
-        'd',
-        'e',
-        'f',
-        'g',
-        'h',
-        'i',
-        'j',
-        'k',
-        'l',
-        'm',
-        'n',
-        'o',
-        'p',
-        'r',
-        's',
-        't',
-        'u',
-        'v',
-        'y',
-        'z',
-    ],
+    object=list(license_plate_characters),
     dtype='<U5',
 ).reshape((-1, 1))
 encoder.fit(categories_array)
